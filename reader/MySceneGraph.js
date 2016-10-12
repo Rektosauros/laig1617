@@ -14,6 +14,7 @@ function MySceneGraph(filename, scene) {
 	this.textures=[];
 	this.materials=[];
 	this.transformations=[];
+	this.primitives=[];
 		
 	// File reading 
 	this.reader = new CGFXMLreader();
@@ -427,23 +428,124 @@ MySceneGraph.prototype.parsePrimitives=function(rootElement){
 					value["y2"]=this.reader.getFloat(rect,'y2',true);
 					break;
 				case 'triangle':
-					var rot = transf.children[k];
-					//value["type"]=transl.tagName;
-					value["rotate"]["axis"]=this.reader.getItem(rotate,'axis',['x','y','z'],true);
-					value["rotate"]["angle"]=this.reader.getFloat(translate,'angle',true);
+					var tri = transf.children[i];
+					value["type"]=transl.tagName;
+					value["x1"]=this.reader.getFloat(tri,'x1',true);
+					value["y1"]=this.reader.getFloat(tri,'y1',true);
+					value["z1"]=this.reader.getFloat(tri,'z1',true);
+					value["x2"]=this.reader.getFloat(tri,'x2',true);
+					value["y2"]=this.reader.getFloat(tri,'y2',true);
+					value["z2"]=this.reader.getFloat(tri,'z2',true);
+					value["x3"]=this.reader.getFloat(tri,'x3',true);
+					value["y3"]=this.reader.getFloat(tri,'y3',true);
+					value["z3"]=this.reader.getFloat(tri,'z3',true);
 					break;
 				case 'cylinder':
-					var scale = transf.children[k];
-					//value["type"]=transl.tagName;
-					value["scale"]["x"]=this.reader.getFloat(scale,'x',true);
-					value["scale"]["y"]=this.reader.getFloat(scale,'y',true);
-					value["scale"]["z"]=this.reader.getFloat(scale,'z',true);
+					var cyl = transf.children[i];
+					value["type"]=transl.tagName;
+					value["base"]=this.reader.getFloat(cyl,'base',true);
+					value["top"]=this.reader.getFloat(cyl,'top',true);
+					value["height"]=this.reader.getFloat(cyl,'height',true);
+					value["slices"]=this.reader.getInteger(cyl,'slices',true);
+					value["stacks"]=this.reader.getInteger(cyl,'stacks',true);
 					break;
+				case 'sphere':
+					var sph=transf.children[i];
+					value["type"]=transl.tagName;
+					value["radius"]=this.reader.getFloat(sph,'radius',true);
+					value["slices"]=this.reader.getInteger(sph,'slices',true);
+					value["stacks"]=this.reader.getInteger(sph,'stacks',true);
+					break;
+				case 'torus':
+					var tor=transf.children[i];
+					value["type"]=transl.tagName;
+					value["inner"]=this.reader.getFloat(tor,'inner',true);
+					value["outter"]=this.reader.getFloat(tor,'outter',true);
+					value["slices"]=this.reader.getInteger(tor,'slices',true);
+					value["loops"]=this.reader.getInteger(tor,'loops',true);
+					break;
+				default:
+					return "primitive with id "+id+" not recognized";
 			}
+			this.primitive[id]=values;
 	}
-}
+};
 
+MySceneGraph.prototype.parseComponents = function(rootElement){
+	var elems = rootElement.getElementsByTagName('components');
+	if(elems==null)
+		return "components element is missing";
 
+	this.nr_comp=elems[0].children.length;
+	var ids=[];
+	for(var i=0;i<nr_comp;i++){
+		var comp=elems[0].children[i];
+		var value=[];
+		var comp_id=this.reader.getString(prim,'id',true);
+		if(idExists(ids,comp_id)==true)
+			return "view with ID "+comp_id+" already exists";
+		ids.push(comp_id);
+
+		var transf=comp.children[0];
+		if(transf.children[0].tagName=='transformationref'){
+			value["trasformation"]["transformationref"]=this.reader.getString(transf.children[0],'id',true);
+		}else{
+			value["trasformation"]["transformationref"]=-1; //default value to check if theres a transf_ref
+			for(k=0;k<transf.children.length;k++){
+				var transf=comp.children[0];
+				switch(transf.children[0].tagName){
+					case 'translate':
+						var transl = transf.children[k];
+						//value["type"]=transl.tagName;
+						value["trasformation"]["translate"]["x"]=this.reader.getFloat(translate,'x',true);
+						value["trasformation"]["translate"]["y"]=this.reader.getFloat(translate,'y',true);
+						value["trasformation"]["translate"]["z"]=this.reader.getFloat(translate,'z',true);
+						break;
+					case 'rotate':
+						var rot = transf.children[k];
+						//value["type"]=transl.tagName;
+						value["trasformation"]["rotate"]["axis"]=this.reader.getItem(rotate,'axis',['x','y','z'],true);
+						value["trasformation"]["rotate"]["angle"]=this.reader.getFloat(translate,'angle',true);
+						break;
+					case 'scale':
+						var scale = transf.children[k];
+						//value["type"]=transl.tagName;
+						value["trasformation"]["scale"]["x"]=this.reader.getFloat(scale,'x',true);
+						value["trasformation"]["scale"]["y"]=this.reader.getFloat(scale,'y',true);
+						value["trasformation"]["scale"]["z"]=this.reader.getFloat(scale,'z',true);
+						break;
+					default:
+						return "trasnformation on component with id "+comp_id+" not recognized";
+				}
+			}
+		}
+		var mats = comp.children[1];
+		n_mats=mats.children.length;
+		for(K=0;k<n_mats;k++){
+			vat mat=mats.children[k];
+			value["materials"][k]["id"]=this.reader.getString(mat,'id',true);
+		}
+
+		var text=comp.children[2];
+		value["texture"]["id"]=this.reader.getString(text,'id',true);
+
+		var chil = comp.children[3];
+		var n_ch=chil.children.length;
+		for(k=0;k<n_ch;k++){
+			switch(chil.children[k].tagName){
+				case 'componentref':
+					value["children"]["componentref"]["id"]=this.reader.getString(chil.children[k],'id',true);
+					break;
+				case 'primitiveref':
+					value["children"]["primitiveref"]["id"]=this.reader.getString(chil.children[k],'id',true);
+					break;
+				default:
+					return "childrens on component with id "+comp_id+" not recognized";
+			}
+		}
+		this.components[comp_id]=value;
+	}
+};
 MySceneGraph.prototype.idExists = function(IDs, id) {
 	var exists = false;
 	for (var i = 0; i < IDs.length; i++) {
