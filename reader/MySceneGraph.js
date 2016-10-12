@@ -37,12 +37,75 @@ MySceneGraph.prototype.onXMLReady=function()
 	var rootElement = this.reader.xmlDoc.documentElement;
 	
 	// Here should go the calls for different functions to parse the various blocks
-	var error = this.parseGlobalsExample(rootElement);
+	// var error = this.parseGlobalsExample(rootElement);
+
+	// if (error != null) {
+	// 	this.onXMLError(error);
+	// 	return;
+	// }	
+
+	var error = this.parseScene(rootElement);
 
 	if (error != null) {
 		this.onXMLError(error);
 		return;
-	}	
+	}
+
+	error = this.parseViews(rootElement);
+
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
+	error = this.parseIllumination(rootElement);
+
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
+	error = this.parseLights(rootElement);
+
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
+	error = this.parseTextures(rootElement);
+
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
+	error = this.parseMaterials(rootElement);
+
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
+	error = this.parseTransformations(rootElement);
+
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
+	error = this.parsePrimitives(rootElement);
+
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
+
+	error = this.parseComponents(rootElement);
+
+	if (error != null) {
+		this.onXMLError(error);
+		return;
+	}
 
 	this.loadedOk=true;
 	
@@ -92,7 +155,6 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 		this.list[e.id]=e.attributes.getNamedItem("coords").value;
 		console.log("Read list item id "+ e.id+" with value "+this.list[e.id]);
 	};
-
 };
 
 MySceneGraph.prototype.parseScene = function(rootElement){
@@ -109,8 +171,6 @@ MySceneGraph.prototype.parseScene = function(rootElement){
 	scene["root"]=this.reader.getString(elems[0],'root',true);
 	scene["axis_length"]=this.reader.getFloat(elems[0],'axis_length',true);
 	console.log("Scene read from file: {root=" + scene["root"] + ", axis_length=" + scene["axis_length"]+ "}");
-
-
 };
 
 MySceneGraph.prototype.parseViews = function(rootElement){
