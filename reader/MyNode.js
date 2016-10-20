@@ -24,7 +24,7 @@ Node.prototype.setId=function(id){
 	this.id=id;
 };
 
-Node.prototype.setDefmat=function(id){
+Node.prototype.setDefMat=function(id){
 	this.default_mat=id;
 };
 

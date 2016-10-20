@@ -58,30 +58,33 @@ XMLscene.prototype.onGraphLoaded = function ()
     for(var i=0;i<this.graph.lights.length;i++){
     	var temp_light=this.graph.lights[i];
     	var id=temp_light["id"];
+        console.log(i+" "+id);
     	this.allLightsIds[i]=id;
     	if(temp_light["type"]=="omni"){
     		if(temp_light["enabled"]==1){
-    			this.lights[id].setVisible(true);
-    			this.lights[id].enable();
+    			this.lights[i].setVisible(true);
+    			this.lights[i].enable();
     		}
-    		this.lights[id].setPosition(temp_light["location"]["x"], temp_light["location"]["y"], temp_light["location"]["z"], temp_light["location"]["w"]);
-    		this.lights[id].setAmbient(temp_light["ambient"]["r"], temp_light["ambient"]["g"], temp_light["ambient"]["b"], temp_light["ambient"]["a"]);
-    		this.lights[id].setDiffuse(temp_light["diffuse"]["r"], temp_light["diffuse"]["g"], temp_light["diffuse"]["b"], temp_light["diffuse"]["a"]);
-    		this.lights[id].setSpecular(temp_light["specular"]["r"], temp_light["specular"]["g"], temp_light["specular"]["b"], temp_light["specular"]["a"]);
-    	}
-    	else if(temp_light[type]=="spot"){
+    		this.lights[i].setPosition(temp_light["location"]["x"], temp_light["location"]["y"], temp_light["location"]["z"], temp_light["location"]["w"]);
+    		this.lights[i].setAmbient(temp_light["ambient"]["r"], temp_light["ambient"]["g"], temp_light["ambient"]["b"], temp_light["ambient"]["a"]);
+    		this.lights[i].setDiffuse(temp_light["diffuse"]["r"], temp_light["diffuse"]["g"], temp_light["diffuse"]["b"], temp_light["diffuse"]["a"]);
+    		this.lights[i].setSpecular(temp_light["specular"]["r"], temp_light["specular"]["g"], temp_light["specular"]["b"], temp_light["specular"]["a"]);
+    	   console.log("created omni light with id:"+id);
+        }
+    	else if(temp_light["type"]=="spot"){
     		if(temp_light["enabled"]==1){
-    			this.lights[id].setVisible(true);
-    			this.lights[id].enable();
+    			this.lights[i].setVisible(true);
+    			this.lights[i].enable();
     		}
     		//not sure about these 2
-    		this.lights[id].setSpotExponent(temp_light["exponent"]);
-    		this.lights[id].setSpotDirection(temp_light["target"]["x"], temp_light["target"]["y"], temp_light["target"]["z"]);
-    		this.lights[id].setPosition(temp_light["location"]["x"], temp_light["location"]["y"], temp_light["location"]["z"], temp_light["location"]["w"]);
-    		this.lights[id].setAmbient(temp_light["ambient"]["r"], temp_light["ambient"]["g"], temp_light["ambient"]["b"], temp_light["ambient"]["a"]);
-    		this.lights[id].setDiffuse(temp_light["diffuse"]["r"], temp_light["diffuse"]["g"], temp_light["diffuse"]["b"], temp_light["diffuse"]["a"]);
-    		this.lights[id].setSpecular(temp_light["specular"]["r"], temp_light["specular"]["g"], temp_light["specular"]["b"], temp_light["specular"]["a"]);
-    	}
+    		this.lights[i].setSpotExponent(temp_light["exponent"]);
+    		this.lights[i].setSpotDirection(temp_light["target"]["x"], temp_light["target"]["y"], temp_light["target"]["z"]);
+    		this.lights[i].setPosition(temp_light["location"]["x"], temp_light["location"]["y"], temp_light["location"]["z"], temp_light["location"]["w"]);
+    		this.lights[i].setAmbient(temp_light["ambient"]["r"], temp_light["ambient"]["g"], temp_light["ambient"]["b"], temp_light["ambient"]["a"]);
+    		this.lights[i].setDiffuse(temp_light["diffuse"]["r"], temp_light["diffuse"]["g"], temp_light["diffuse"]["b"], temp_light["diffuse"]["a"]);
+    		this.lights[i].setSpecular(temp_light["specular"]["r"], temp_light["specular"]["g"], temp_light["specular"]["b"], temp_light["specular"]["a"]);
+    	   console.log("created spot light with id:"+id);
+        }
     }
 };
 

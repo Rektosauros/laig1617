@@ -5,7 +5,7 @@
     <views default="vista1" >
 
         <perspective id="vista1" near="0.5" far="300.0" angle="0.4">
-            <from x="20.0" y="0.0" z="40.0" />
+            <from x="20" y="0.0" z="40.0" />
             <to x="0.0" y="0.0" z="0.0" />
         </perspective>
 
@@ -105,10 +105,9 @@
         </primitive>
 		
 		<primitive id="tree2">
-		<cylinder base="0.3" top="0.3" height="3" slices="20" stacks="20" />
+		   <cylinder base="0.3" top="0.3" height="3" slices="20" stacks="20" />
         </primitive>
 
-		
 	    <primitive id="tree3">
 			<cylinder base="0.3" top="0.3" height="5" slices="20" stacks="20" />
         </primitive>

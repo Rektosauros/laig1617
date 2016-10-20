@@ -5,7 +5,8 @@ function MySceneGraph(filename, scene) {
 	// Establish bidirectional references between scene and graph
 	this.scene = scene;
 	scene.graph=this;
-	this.scene=[];
+
+	this.scene2=[];
 	this.views=[];
 	this.default_view;
 	this.illumination=[];
@@ -14,7 +15,9 @@ function MySceneGraph(filename, scene) {
 	this.txt_ampfac=[];
 	this.materials=[];
 	this.transformations=[];
-	this.primitives=[];
+	this.primitive=[];
+	this.components=[];
+
 		
 	// File reading 
 	this.reader = new CGFXMLreader();
@@ -168,9 +171,9 @@ MySceneGraph.prototype.parseScene = function(rootElement){
 	}
  //NOT SURE THIS WORKS THIS WAY
 	
-	this.scene["root"]=this.reader.getString(elems[0],'root',true);
-	this.scene["axis_length"]=this.reader.getFloat(elems[0],'axis_length',true);
-	console.log("Scene read from file: {root=" + this.cene["root"] + ", axis_length=" + this.scene["axis_length"]+ "}");
+	this.scene2["root"]=this.reader.getString(elems[0],'root',true);
+	this.scene2["axis_length"]=this.reader.getFloat(elems[0],'axis_length',true);
+	console.log("Scene read from file: {root=" + this.scene2["root"] + ", axis_length=" + this.scene2["axis_length"]+ "}");
 };
 
 MySceneGraph.prototype.parseViews = function(rootElement){
@@ -179,15 +182,15 @@ MySceneGraph.prototype.parseViews = function(rootElement){
 		return "views element is missing.";
 	}
 
-	this.default_view=this.reader.getString(elems[0],'id',true);
+	this.default_view=this.reader.getString(elems[0],'default',true);
 	this.nr_views=elems[0].children.length;
 	var ids=[];
-	for(var i=0;i<nr_views;i++){
+	for(var i=0;i<this.nr_views;i++){
 		var view = elems[0].children[i];
 		var values=[];
 		var id = this.reader.getString(view,'id',true);
 
-		if(idExists(ids,id)==true)
+		if(this.idExists(ids,id)==true)
 			return "view with ID "+id+" already exists";
 		ids.push(id);
 
@@ -198,12 +201,14 @@ MySceneGraph.prototype.parseViews = function(rootElement){
 
 
 		var from=view.children[0];
+		values["from"]=[];
 		values["from"]["x"]=this.reader.getFloat(from,'x',true);
 		values["from"]["y"]=this.reader.getFloat(from,'y',true);
 		values["from"]["z"]=this.reader.getFloat(from,'z',true);
 		console.log("View with id "+ id + " read from file: from {x=" + values["from"]["x"] + ", y=" + values["from"]["y"] + ", z=" +values["from"]["z"]  + "}");
 
-		var to=view.children[0];
+		var to=view.children[1];
+		values["to"]=[];
 		values["to"]["x"]=this.reader.getFloat(to,'x',true);
 		values["to"]["y"]=this.reader.getFloat(to,'y',true);
 		values["to"]["z"]=this.reader.getFloat(to,'z',true);
@@ -225,23 +230,25 @@ MySceneGraph.prototype.parseIllumination = function(rootElement){
 
 	var il=elems[0];
 	var values;
-	this.illumination["doublesided"]=this.reader.getItem(il,'doublesided',[0,1],true);
-	this.illumination["local"]=this.reader.getItem(il,'local',[0,1],true);
-	console.log("illumination read from file:  {doublesided=" + values["doublesided"] + ", local=" + values["local"]  + "}");
+	this.illumination["doublesided"]=this.reader.getItem(il,'doublesided',['0','1'],true);
+	this.illumination["local"]=this.reader.getItem(il,'local',['0','1'],true);
+	console.log("illumination read from file:  {doublesided=" + this.illumination["doublesided"] + ", local=" + this.illumination["local"]  + "}");
 
 	var amb = il.children[0];
+	this.illumination["ambient"]=[];
 	this.illumination["ambient"]["r"]=this.reader.getFloat(amb,"r",true);
 	this.illumination["ambient"]["g"]=this.reader.getFloat(amb,"g",true);
 	this.illumination["ambient"]["b"]=this.reader.getFloat(amb,"b",true);
 	this.illumination["ambient"]["a"]=this.reader.getFloat(amb,"a",true);
-	console.log("illumination read from file: ambient {r=" + values["amb"]["r"] + ", g=" + values["amb"]["g"] + ", b=" +values["amb"]["b"]+ ", a=" +values["amb"]["a"]  + "}");
+	console.log("illumination read from file: ambient {r=" + this.illumination["ambient"]["r"] + ", g=" + this.illumination["ambient"]["g"] + ", b=" +this.illumination["ambient"]["b"]+ ", a=" +this.illumination["ambient"]["a"]  + "}");
 
 	var back = il.children[1];
+	this.illumination["background"]=[];
 	this.illumination["background"]["r"]=this.reader.getFloat(back,"r",true);
 	this.illumination["background"]["g"]=this.reader.getFloat(back,"g",true);
 	this.illumination["background"]["b"]=this.reader.getFloat(back,"b",true);
 	this.illumination["background"]["a"]=this.reader.getFloat(back,"a",true);
-	console.log("illumination read from file: background {r=" + values["back"]["r"] + ", g=" + values["back"]["g"] + ", b=" +values["back"]["b"]+ ", a=" +values["back"]["a"]  + "}");
+	console.log("illumination read from file: background {r=" + this.illumination["background"]["r"] + ", g=" + this.illumination["background"]["g"] + ", b=" +this.illumination["background"]["b"]+ ", a=" +this.illumination["background"]["a"]  + "}");
 };
 
 MySceneGraph.prototype.parseLights = function(rootElement){
@@ -254,43 +261,47 @@ MySceneGraph.prototype.parseLights = function(rootElement){
 	for(var i=0;i<nrChildrens;i++){
 		var values=[];
 		var id = this.reader.getString(elems[0].children[i],'id',true);
-		if(idExists(ids,id)==true)
+		if(this.idExists(ids,id)==true)
 			return "view with ID "+id+" already exists";
 		ids.push(id);
-		this.values["id"]=id;
+		values["id"]=id;
 
 		if(elems[0].children[i].tagName=="omni"){
 			var children = elems[0].children[i];
-			this.values["enabled"]=this.reader.getItem(children,'enabled',[0,1],true);
-			this.values["type"]="omni";
+			values["enabled"]=this.reader.getItem(children,'enabled',['0','1'],true);
+			values["type"]="omni";
 			console.log("Omni read from file:  {id=" + id + ", enabled=" + values["enabled"]  + "}");
 
 			var location = children.children[0];
-			this.values["location"]["x"]=this.reader.getFloat(location,'x',true);
-			this.values["location"]["y"]=this.reader.getFloat(location,'y',true);
-			this.values["location"]["z"]=this.reader.getFloat(location,'z',true);
-			this.values["location"]["w"]=this.reader.getFloat(location,'w',true);
-			console.log("Omni read from file: ambient {r=" + values["amb"]["r"] + ", g=" + values["amb"]["g"] + ", b=" +values["amb"]["b"]+ ", a=" +values["amb"]["a"]  + "}");	
+			values["location"]=[];
+			values["location"]["x"]=this.reader.getFloat(location,'x',true);
+			values["location"]["y"]=this.reader.getFloat(location,'y',true);
+			values["location"]["z"]=this.reader.getFloat(location,'z',true);
+			values["location"]["w"]=this.reader.getFloat(location,'w',true);
+			console.log("Omni read from file: ambient {r=" + values["location"]["x"] + ", g=" + values["location"]["y"] + ", b=" +values["location"]["z"]+ ", a=" +values["location"]["w"]  + "}");	
 
 			var amb = children.children[1];
-			this.values["ambient"]["r"]=this.reader.getFloat(amb,"r",true);
-			this.values["ambient"]["g"]=this.reader.getFloat(amb,"g",true);
-			this.values["ambient"]["b"]=this.reader.getFloat(amb,"b",true);
-			this.values["ambient"]["a"]=this.reader.getFloat(amb,"a",true);
-			console.log("Omni read from file: ambient {r=" + values["amb"]["r"] + ", g=" + values["amb"]["g"] + ", b=" +values["amb"]["b"]+ ", a=" +values["amb"]["a"]  + "}");
+			values["ambient"]=[];
+			values["ambient"]["r"]=this.reader.getFloat(amb,"r",true);
+			values["ambient"]["g"]=this.reader.getFloat(amb,"g",true);
+			values["ambient"]["b"]=this.reader.getFloat(amb,"b",true);
+			values["ambient"]["a"]=this.reader.getFloat(amb,"a",true);
+			console.log("Omni read from file: ambient {r=" + values["ambient"]["r"] + ", g=" + values["ambient"]["g"] + ", b=" +values["ambient"]["b"]+ ", a=" +values["ambient"]["a"]  + "}");
 
 			var dif = children.children[2];
-			this.values["diffuse"]["r"]=this.reader.getFloat(dif,"r",true);
-			this.values["diffuse"]["g"]=this.reader.getFloat(dif,"g",true);
-			this.values["diffuse"]["b"]=this.reader.getFloat(dif,"b",true);
-			this.values["diffuse"]["a"]=this.reader.getFloat(dif,"a",true);
+			values["diffuse"]=[];
+			values["diffuse"]["r"]=this.reader.getFloat(dif,"r",true);
+			values["diffuse"]["g"]=this.reader.getFloat(dif,"g",true);
+			values["diffuse"]["b"]=this.reader.getFloat(dif,"b",true);
+			values["diffuse"]["a"]=this.reader.getFloat(dif,"a",true);
 			console.log("Omni read from file: ambient {r=" + values["diffuse"]["r"] + ", g=" + values["diffuse"]["g"] + ", b=" +values["diffuse"]["b"]+ ", a=" +values["diffuse"]["a"]  + "}");
 
 			var spec = children.children[3];
-			this.values["specular"]["r"]=this.reader.getFloat(spec,"r",true);
-			this.values["specular"]["g"]=this.reader.getFloat(spec,"g",true);
-			this.values["specular"]["b"]=this.reader.getFloat(spec,"b",true);
-			this.values["specular"]["a"]=this.reader.getFloat(spec,"a",true);
+			values["specular"]=[];
+			values["specular"]["r"]=this.reader.getFloat(spec,"r",true);
+			values["specular"]["g"]=this.reader.getFloat(spec,"g",true);
+			values["specular"]["b"]=this.reader.getFloat(spec,"b",true);
+			values["specular"]["a"]=this.reader.getFloat(spec,"a",true);
 			console.log("Omni read from file: ambient {r=" + values["specular"]["r"] + ", g=" + values["specular"]["g"] + ", b=" +values["specular"]["b"]+ ", a=" +values["specular"]["a"]  + "}");
 
 			this.lights[i] =values;
@@ -299,43 +310,48 @@ MySceneGraph.prototype.parseLights = function(rootElement){
 
 		else if(elems[0].children[i].tagName =="spot"){
 			var children = elems[0].children[i];
-			this.values["enabled"]=this.reader.getItem(children,'enabled',true);
-			this.values["angle"]=this.reader.getFloat(children,'angle',true);
-			this.values["exponent"]=this.reader.getFloat(children,'exponent',true);
-			this.values["type"]="spot";
+			values["enabled"]=this.reader.getItem(children,'enabled',['0','1'],true);
+			values["angle"]=this.reader.getFloat(children,'angle',true);
+			values["exponent"]=this.reader.getFloat(children,'exponent',true);
+			values["type"]="spot";
 			console.log("spot read from file:  {id=" + id + ", enabled=" + values["enabled"]  + ", angle=" + values["angle"]  + ", exponent=" + values["exponent"]  +"}");
 
 			var target = children.children[0];
-			this.values["target"]["x"]=this.reader.getFloat(target,'x',true);
-			this.values["target"]["y"]=this.reader.getFloat(target,'y',true);
-			this.values["target"]["z"]=this.reader.getFloat(target,'z',true);
+			values["target"]=[];
+			values["target"]["x"]=this.reader.getFloat(target,'x',true);
+			values["target"]["y"]=this.reader.getFloat(target,'y',true);
+			values["target"]["z"]=this.reader.getFloat(target,'z',true);
 			console.log("spot read from file: target {r=" + values["target"]["x"] + ", g=" + values["target"]["y"] + ", b=" +values["target"]["z"]+"}");	
 
 			var location = children.children[1];
-			this.values["location"]["x"]=this.reader.getFloat(location,'x',true);
-			this.values["location"]["y"]=this.reader.getFloat(location,'y',true);
-			this.values["location"]["z"]=this.reader.getFloat(location,'z',true);
+			values["location"]=[];
+			values["location"]["x"]=this.reader.getFloat(location,'x',true);
+			values["location"]["y"]=this.reader.getFloat(location,'y',true);
+			values["location"]["z"]=this.reader.getFloat(location,'z',true);
 			console.log("spot read from file: location {r=" + values["location"]["x"] + ", g=" + values["location"]["y"] + ", b=" +values["location"]["z"]+"}");	
 
 			var amb = children.children[2];
-			this.values["ambient"]["r"]=this.reader.getFloat(amb,"r",true);
-			this.values["ambient"]["g"]=this.reader.getFloat(amb,"g",true);
-			this.values["ambient"]["b"]=this.reader.getFloat(amb,"b",true);
-			this.values["ambient"]["a"]=this.reader.getFloat(amb,"a",true);
-			console.log("spot read from file: ambient {r=" + values["amb"]["r"] + ", g=" + values["amb"]["g"] + ", b=" +values["amb"]["b"]+ ", a=" +values["amb"]["a"]  + "}");
+			values["ambient"]=[];
+			values["ambient"]["r"]=this.reader.getFloat(amb,"r",true);
+			values["ambient"]["g"]=this.reader.getFloat(amb,"g",true);
+			values["ambient"]["b"]=this.reader.getFloat(amb,"b",true);
+			values["ambient"]["a"]=this.reader.getFloat(amb,"a",true);
+			console.log("spot read from file: ambient {r=" + values["ambient"]["r"] + ", g=" + values["ambient"]["g"] + ", b=" +values["ambient"]["b"]+ ", a=" +values["ambient"]["a"]  + "}");
 
 			var dif = children.children[3];
-			this.values["diffuse"]["r"]=this.reader.getFloat(dif,"r",true);
-			this.values["diffuse"]["g"]=this.reader.getFloat(dif,"g",true);
-			this.values["diffuse"]["b"]=this.reader.getFloat(dif,"b",true);
-			this.values["diffuse"]["a"]=this.reader.getFloat(dif,"a",true);
+			values["diffuse"]=[];
+			values["diffuse"]["r"]=this.reader.getFloat(dif,"r",true);
+			values["diffuse"]["g"]=this.reader.getFloat(dif,"g",true);
+			values["diffuse"]["b"]=this.reader.getFloat(dif,"b",true);
+			values["diffuse"]["a"]=this.reader.getFloat(dif,"a",true);
 			console.log("spot read from file: diffuse {r=" + values["diffuse"]["r"] + ", g=" + values["diffuse"]["g"] + ", b=" +values["diffuse"]["b"]+ ", a=" +values["diffuse"]["a"]  + "}");
 
 			var spec = children.children[4];
-			this.values["specular"]["r"]=this.reader.getFloat(spec,"r",true);
-			this.values["specular"]["g"]=this.reader.getFloat(spec,"g",true);
-			this.values["specular"]["b"]=this.reader.getFloat(spec,"b",true);
-			this.values["specular"]["a"]=this.reader.getFloat(spec,"a",true);
+			values["specular"]=[];
+			values["specular"]["r"]=this.reader.getFloat(spec,"r",true);
+			values["specular"]["g"]=this.reader.getFloat(spec,"g",true);
+			values["specular"]["b"]=this.reader.getFloat(spec,"b",true);
+			values["specular"]["a"]=this.reader.getFloat(spec,"a",true);
 			console.log("spot read from file: specular {r=" + values["specular"]["r"] + ", g=" + values["specular"]["g"] + ", b=" +values["specular"]["b"]+ ", a=" +values["specular"]["a"]  + "}");
 
 			this.lights[i]=values;
@@ -354,22 +370,19 @@ MySceneGraph.prototype.parseTextures = function(rootElement){
 	var ids =[];
 	var nrChildrens= elems[0].children.length;
 	for(var i=0;i<nrChildrens;i++){
-		var text = new CFGappearance(this);
+		var values=[];
 		var id = this.reader.getString(elems[0].children[i],'id',true);
-		if(idExists(ids,id)==true)
+		if(this.idExists(ids,id)==true)
 			return "view with ID "+id+" already exists";
 		ids.push(id);
 
 		var children = elems[0].children[i];
-		var path=this.reader.getString(children,'file',true);
-		var length_s=this.reader.getFloat(children,'length_s',true);
-		var length_t=this.reader.getFloat(children,'length_t',true);
+		values["file"]=this.reader.getString(children,'file',true);
+		values["length_s"]=this.reader.getFloat(children,'length_s',true);
+		values["length_t"]=this.reader.getFloat(children,'length_t',true);
 
-		txt_ampfac[id]['s']=length_s;
-		txt_ampfac[id]['t']=length_t;
-
-		text.loadTexture(path);
-		this.textures[id]=text;
+		
+		this.textures[id]=values;
 	}
 };
 
@@ -378,53 +391,53 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 	if(elems==null)
 		return "materials element is missing";
 
-	this.nr_materials=elems[0].children.length;
+	var nr_materials=elems[0].children.length;
 	var ids=[];
 	for(var i=0;i<nr_materials;i++){
 		var mat=elems[0].children[i];
-		var mat=new CFGappearance(this);
+		var values =[];
 		var id=this.reader.getString(mat,'id',true);
-		if(idExists(ids,id)==true)
+		if(this.idExists(ids,id)==true)
 			return "view with ID "+id+" already exists";
 		ids.push(id);
 
 		var emission=mat.children[0];
-		var r=this.reader.getFloat(emission,"r",true);
-		var g=this.reader.getFloat(emission,"g",true);
-		var b=this.reader.getFloat(emission,"b",true);
-		var a=this.reader.getFloat(emission,"a",true);
-		mat.setEmission(r,g,b,a);
-		// console.log("Material read from file: emission {r=" + values["emission"]["r"] + ", g=" + values["emission"]["g"] + ", b=" +values["emission"]["b"]+ ", a=" +values["emission"]["a"]  + "}");
+		values["emission"]=[];
+		values["emission"]["r"]=this.reader.getFloat(emission,"r",true);
+		values["emission"]["g"]=this.reader.getFloat(emission,"g",true);
+		values["emission"]["b"]=this.reader.getFloat(emission,"b",true);
+		values["emission"]["a"]=this.reader.getFloat(emission,"a",true);
+		console.log("Material read from file: emission {r=" + values["emission"]["r"] + ", g=" + values["emission"]["g"] + ", b=" +values["emission"]["b"]+ ", a=" +values["emission"]["a"]  + "}");
 
 		var ambient=mat.children[1];
-		r=this.reader.getFloat(ambient,"r",true);
-		g=this.reader.getFloat(ambient,"g",true);
-		b=this.reader.getFloat(ambient,"b",true);
-		a=this.reader.getFloat(ambient,"a",true);
-		mat.setAmbient(r,g,b,a);
-		// console.log("Material read from file: ambient {r=" + values["ambient"]["r"] + ", g=" + values["ambient"]["g"] + ", b=" +values["ambient"]["b"]+ ", a=" +values["ambient"]["a"]  + "}");
+		values["ambient"]=[];
+		values["ambient"]["r"]=this.reader.getFloat(ambient,"r",true);
+		values["ambient"]["g"]=this.reader.getFloat(ambient,"g",true);
+		values["ambient"]["b"]=this.reader.getFloat(ambient,"b",true);
+		values["ambient"]["a"]=this.reader.getFloat(ambient,"a",true);
+		console.log("Material read from file: ambient {r=" + values["ambient"]["r"] + ", g=" + values["ambient"]["g"] + ", b=" +values["ambient"]["b"]+ ", a=" +values["ambient"]["a"]  + "}");
 
 		var diffuse=mat.children[2];
-		r=this.reader.getFloat(diffuse,"r",true);
-		g=this.reader.getFloat(diffuse,"g",true);
-		b=this.reader.getFloat(diffuse,"b",true);
-		a=this.reader.getFloat(diffuse,"a",true);
-		mat.setDiffuse(r,g,b,a);
-		// console.log("Material read from file: diffuse {r=" + values["diffuse"]["r"] + ", g=" + values["diffuse"]["g"] + ", b=" +values["diffuse"]["b"]+ ", a=" +values["diffuse"]["a"]  + "}");
+		values["diffuse"]=[];
+		values["diffuse"]["r"]=this.reader.getFloat(diffuse,"r",true);
+		values["diffuse"]["g"]=this.reader.getFloat(diffuse,"g",true);
+		values["diffuse"]["b"]=this.reader.getFloat(diffuse,"b",true);
+		values["diffuse"]["a"]=this.reader.getFloat(diffuse,"a",true);
+		console.log("Material read from file: diffuse {r=" + values["diffuse"]["r"] + ", g=" + values["diffuse"]["g"] + ", b=" +values["diffuse"]["b"]+ ", a=" +values["diffuse"]["a"]  + "}");
 
 		var specular=mat.children[3];
-		r=this.reader.getFloat(specular,"r",true);
-		g=this.reader.getFloat(specular,"g",true);
-		b=this.reader.getFloat(specular,"b",true);
-		a=this.reader.getFloat(specular,"a",true);
-		mat.setSpecular(r,g,b,a);
-		// console.log("Material read from file: specular {r=" + values["specular"]["r"] + ", g=" + values["specular"]["g"] + ", b=" +values["specular"]["b"]+ ", a=" +values["specular"]["a"]  + "}");
+		values["specular"]=[];
+		values["specular"]["r"]=this.reader.getFloat(specular,"r",true);
+		values["specular"]["g"]=this.reader.getFloat(specular,"g",true);
+		values["specular"]["b"]=this.reader.getFloat(specular,"b",true);
+		values["specular"]["a"]=this.reader.getFloat(specular,"a",true);
+		console.log("Material read from file: specular {r=" + values["specular"]["r"] + ", g=" + values["specular"]["g"] + ", b=" +values["specular"]["b"]+ ", a=" +values["specular"]["a"]  + "}");
 
 		var shininess=mat.children[4];
-		var shini=this.reader.getFloat(shininess,'value',true);
-		mat.setShininess(shini);
+		values["shininess"]=[];
+		values["shininess"]["value"]=this.reader.getFloat(shininess,'value',true);
 
-		this.materials[id]=mat;
+		this.materials[id]=values;
 	}
 };
 
@@ -433,18 +446,18 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 	if(elems==null)
 		return "transformations element is missing";
 
-	this.nr_transf=elems[0].children.length;
+	var nr_transf=elems[0].children.length;
 	var ids=[];
 	for(var i=0;i<nr_transf;i++){
 		var transf=elems[0].children[i];
 		var all_transf=[];
 		var id=this.reader.getString(transf,'id',true);
-		if(idExists(ids,id)==true)
+		if(this.idExists(ids,id)==true)
 			return "trasnformation with ID "+id+" already exists";
 		ids.push(id);
 
 		var m= mat4.create();
-		var nr_ch=trasnf.children.length;
+		var nr_ch=transf.children.length;
 		for(var k=0;i<nr_ch;i++){
 
 			var values =[];
@@ -452,15 +465,15 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 				case 'translate':
 					var transl = transf.children[k];
 					//value["type"]=transl.tagName;
-					var x=this.reader.getFloat(translate,'x',true);
-					var y=this.reader.getFloat(translate,'y',true);
-					var z=this.reader.getFloat(translate,'z',true);
+					var x=this.reader.getFloat(transl,'x',true);
+					var y=this.reader.getFloat(transl,'y',true);
+					var z=this.reader.getFloat(transl,'z',true);
 					mat4.translate(m,m,[x,y,z]);
 					break;
 				case 'rotate':
 					var rot = transf.children[k];
 					//value["type"]=transl.tagName;
-					switch (this.reader.getItem(rotate,'axis',['x','y','z'],true)) {
+					switch (this.reader.getItem(rot,'axis',['x','y','z'],true)) {
 						case "x":
 							axis = [1, 0, 0];
 							break;
@@ -471,7 +484,7 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 							axis = [0, 0, 1];
 							break;
 					}
-					var angle=this.reader.getFloat(translate,'angle',true);
+					var angle=this.reader.getFloat(rot,'angle',true);
 					mat4.rotate(m,m, (Math.PI +angle) / 180, axis);
 					break;
 				case 'scale':
@@ -494,28 +507,31 @@ MySceneGraph.prototype.parsePrimitives=function(rootElement){
 	if(elems==null)
 		return "primitives element is missing";
 
-	this.nr_prim=elems[0].children.length;
+	var nr_prim=elems[0].children.length;
 	var ids=[];
 	for(var i=0;i<nr_prim;i++){
 		var prim=elems[0].children[i];
 		var value=[];
 		var id=this.reader.getString(prim,'id',true);
-		if(idExists(ids,id)==true)
+		if(this.idExists(ids,id)==true)
 			return "view with ID "+id+" already exists";
 		ids.push(id);
 
-		switch(prim.children[k].tagName){
+		// console.log(i);
+		// console.log(prim.children[0].tagName);
+		switch(prim.children[0].tagName){
 				case 'rectangle':
-					var rect = prim.children[i];
+					var rect = prim.children[0];
 					value["type"]=rect.tagName;
 					value["x1"]=this.reader.getFloat(rect,'x1',true);
 					value["y1"]=this.reader.getFloat(rect,'y1',true);
 					value["x2"]=this.reader.getFloat(rect,'x2',true);
 					value["y2"]=this.reader.getFloat(rect,'y2',true);
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {x1=" + value["x1"] + ", y1=" + value["y1"] + ", x2=" +value["x2"]+ ", y2=" +value["y2"]  + "}");
 					break;
 				case 'triangle':
-					var tri = transf.children[i];
-					value["type"]=transl.tagName;
+					var tri = prim.children[0];
+					value["type"]=tri.tagName;
 					value["x1"]=this.reader.getFloat(tri,'x1',true);
 					value["y1"]=this.reader.getFloat(tri,'y1',true);
 					value["z1"]=this.reader.getFloat(tri,'z1',true);
@@ -525,35 +541,39 @@ MySceneGraph.prototype.parsePrimitives=function(rootElement){
 					value["x3"]=this.reader.getFloat(tri,'x3',true);
 					value["y3"]=this.reader.getFloat(tri,'y3',true);
 					value["z3"]=this.reader.getFloat(tri,'z3',true);
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {x1=" + value["x1"] + ", y1=" + value["y1"] + ", z1=" +value["z1"]+ ", x2=" +value["x2"]  + ", y2=" +value["y2"]  + ", z2=" +value["z2"]  + ", x3=" +value["x3"]  +", y3=" +value["y3"]  +", z3=" +value["z3"]  +"}");
 					break;
 				case 'cylinder':
-					var cyl = transf.children[i];
-					value["type"]=transl.tagName;
+					var cyl = prim.children[0];
+					value["type"]=cyl.tagName;
 					value["base"]=this.reader.getFloat(cyl,'base',true);
 					value["top"]=this.reader.getFloat(cyl,'top',true);
 					value["height"]=this.reader.getFloat(cyl,'height',true);
 					value["slices"]=this.reader.getInteger(cyl,'slices',true);
 					value["stacks"]=this.reader.getInteger(cyl,'stacks',true);
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {base=" + value["base"] + ", top=" + value["top"] + ", height=" +value["height"]+ ", slices=" +value["slices"]  + ", stacks=" +value["stacks"]  +"}");
 					break;
 				case 'sphere':
-					var sph=transf.children[i];
-					value["type"]=transl.tagName;
+					var sph=prim.children[0];
+					value["type"]=sph.tagName;
 					value["radius"]=this.reader.getFloat(sph,'radius',true);
 					value["slices"]=this.reader.getInteger(sph,'slices',true);
 					value["stacks"]=this.reader.getInteger(sph,'stacks',true);
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {reader=" + value["radius"] + ", slices=" + value["slices"] + ", stacks=" +value["stacks"]+  "}");
 					break;
 				case 'torus':
-					var tor=transf.children[i];
-					value["type"]=transl.tagName;
+					var tor=prim.children[0];
+					value["type"]=tor.tagName;
 					value["inner"]=this.reader.getFloat(tor,'inner',true);
-					value["outter"]=this.reader.getFloat(tor,'outter',true);
+					value["outer"]=this.reader.getFloat(tor,'outer',true);
 					value["slices"]=this.reader.getInteger(tor,'slices',true);
 					value["loops"]=this.reader.getInteger(tor,'loops',true);
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {inner=" + value["inner"] + ", outer=" + value["outer"] + ", slices=" +value["slices"]+ ", loops=" +value["loops"]  + "}");
 					break;
 				default:
 					return "primitive with id "+id+" not recognized";
 			}
-			this.primitive[id]=values;
+			this.primitive[id]=value;
 	}
 };
 
@@ -562,51 +582,57 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 	if(elems==null)
 		return "components element is missing";
 
-	this.nr_comp=elems[0].children.length;
+	var nr_comp=elems[0].children.length;
 	var ids=[];
 	for(var i=0;i<nr_comp;i++){
 		var comp=elems[0].children[i];
 		var value=[];
-		var comp_id=this.reader.getString(prim,'id',true);
-		if(idExists(ids,comp_id)==true)
+		var comp_id=this.reader.getString(comp,'id',true);
+		if(this.idExists(ids,comp_id)==true)
 			return "Component with ID "+comp_id+" already exists";
 		ids.push(comp_id);
 		var node = new Node();
 		node.setId(comp_id);
+		var m = mat4.create();
 
 		var transf=comp.children[0];
 		if(transf.children[0].tagName=='transformationref'){
 			var transf_id=this.reader.getString(transf.children[0],'id',true);
-			node.setMatrix(transf_id);
+
+			node.setMatrix(this.transformations[transf_id]);
 		}else{
-			value["trasformation"]["transformationref"]=-1; //default value to check if theres a transf_ref
+			// value["trasformation"]["transformationref"]=-1; //default value to check if theres a transf_ref
 			for(k=0;k<transf.children.length;k++){
-				var transf=comp.children[0];
-				switch(transf.children[0].tagName){
+				switch(transf.children[k].tagName){
 					case 'translate':
 						var transl = transf.children[k];
 						//value["type"]=transl.tagName;
-						var x=this.reader.getFloat(translate,'x',true);
-						var y=this.reader.getFloat(translate,'y',true);
-						var z=this.reader.getFloat(translate,'z',true);
+						var x=this.reader.getFloat(transl,'x',true);
+						var y=this.reader.getFloat(transl,'y',true);
+						var z=this.reader.getFloat(transl,'z',true);
 						mat4.translate(m,m,[x,y,z]);
+						console.log("translation of component "+comp_id+" with the values: x:"+x+", y:"+y+", z:"+z);
 						break;
 					case 'rotate':
 						var rot = transf.children[k];
 						//value["type"]=transl.tagName;
-						switch (this.reader.getItem(rotate,'axis',['x','y','z'],true)) {
+						switch (this.reader.getItem(rot,'axis',['x','y','z'],true)) {
 						case "x":
 							axis = [1, 0, 0];
+							var ax="x";
 							break;
 						case "y":
 							axis = [0, 1, 0];
+							var ax="y";
 							break;
 						case "z":
 							axis = [0, 0, 1];
+							var ax="z";
 							break;
 					}
-						var angle=this.reader.getFloat(translate,'angle',true);
+						var angle=this.reader.getFloat(rot,'angle',true);
 						mat4.rotate(m,m, (Math.PI +angle) / 180, axis);
+						console.log("Rotation of component "+comp_id+" with the values: axis:"+ax+", angle:"+angle);
 						break;
 					case 'scale':
 						var scale = transf.children[k];
@@ -615,6 +641,7 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 						var sy=this.reader.getFloat(scale,'y',true);
 						var sz=this.reader.getFloat(scale,'z',true);
 						mat4.scale(m,m,[sx,sy,sz]);
+						console.log("Scale of component "+comp_id+" with the values: sx:"+sx+", sy:"+sy+", sz:"+sz);
 						break;
 					default:
 						return "trasnformation on component with id "+comp_id+" not recognized";
