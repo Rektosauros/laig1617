@@ -1,0 +1,465 @@
+<dsx>
+
+    <scene root="root" axis_length="2" />
+
+    <views default="vista1" >
+
+        <perspective id="vista1" near="0.5" far="300.0" angle="0.4">
+            <from x="20.0" y="0.0" z="40.0" />
+            <to x="0.0" y="0.0" z="0.0" />
+        </perspective>
+
+        <perspective id="vista2" near="0.5" far="300.0" angle="0.4">
+            <from x="0.0" y="40.0" z="20.0" />
+            <to x="0.0" y="0.0" z="0.0" />
+        </perspective>
+
+        <perspective id="vista3" near="0.5" far="300.0" angle="0.4">
+            <from x="-60.0" y="40.0" z="0.0" />
+            <to x="0.0" y="0.0" z="0.0" />
+        </perspective>
+
+    </views>
+
+    <illumination doublesided="1" local="1" >
+
+        <ambient r="0.5" g="0.5" b="0.5" a="1" />
+        <background r="0.5" g="0.3" b="0.6" a="1" />
+
+    </illumination>
+
+    <lights>
+
+        <omni id="omniLight" enabled="1" >
+            <location x="6" y="6" z="0" w="1" />
+            <ambient r="1.0" g="1.0" b="1.0" a="1.0" />
+            <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
+            <specular r="1.0" g="1.0" b="1.0" a="1.0" />
+        </omni>
+
+        <spot id="spotLight" enabled="0" angle="45" exponent="0.1">
+            <target x="2" y="2" z="0" />
+            <location x="6" y="6" z="6" />
+            <ambient r="0.5" g="0.5" b="0.5" a="1" />
+            <diffuse r="0.5" g="0.5" b="0.5" a="1" />
+            <specular r="0.5" g="0.5" b="0.5" a="1" />
+        </spot>
+
+    </lights>
+
+    <textures>
+        //<texture id="text1" file="resources/floortext.jpg" length_s="25" length_t="25" />
+        <texture id="text2" file="resources/woodtext.jpg" length_s="5" length_t="5" />
+    </textures>
+
+    <materials>
+
+        <material id="graySeat" >
+            <emission r="0.3" g="0.3" b="0.3" a="1" />
+            <ambient r="0.3" g="0.3" b="0.3" a="1" />
+            <diffuse r="0.3" g="0.3" b="0.3" a="1" />
+            <specular r="1" g="1" b="1" a="1" />
+            <shininess value="0.5" />
+        </material>
+		
+		<material id="greenStuff" >
+            <emission r="0.3" g="1.0" b="0.3" a="1" />
+            <ambient r="0.3" g="1.0" b="0.3" a="1" />
+            <diffuse r="0.0" g="1.0" b="0.0" a="1" />
+            <specular r="1" g="1" b="1" a="1" />
+            <shininess value="0.5" />
+        </material>
+
+        <material id="default" >
+            <emission r="0.1" g="0.1" b="0.1" a="1" />
+            <ambient r="1" g="1" b="1" a="1" />
+            <diffuse r="1" g="0.0" b="0.0" a="1" />
+            <specular r="1" g="1" b="1" a="1" />
+            <shininess value="0.5" />
+        </material>
+
+    </materials>
+
+    <transformations>
+
+        <transformation id="trans1">
+           <translate x="1" y="1" z="1" />
+           <rotate axis="x" angle="90" />
+           <scale x="1" y="1" z="1" />
+        </transformation>
+
+        <transformation id="trans2">
+            <rotate axis="y" angle="-90" />
+        </transformation>
+
+    </transformations>
+
+    <primitives>
+
+        <primitive id="floor">
+            <rectangle x1="-12" y1="-12" x2="12" y2="12" />
+        </primitive>
+
+        <primitive id="tree1">
+            <cylinder base="0.3" top="0.3" height="3" slices="20" stacks="20" />
+        </primitive>
+		
+		<primitive id="tree2">
+		<cylinder base="0.3" top="0.3" height="3" slices="20" stacks="20" />
+        </primitive>
+
+		
+	    <primitive id="tree3">
+			<cylinder base="0.3" top="0.3" height="5" slices="20" stacks="20" />
+        </primitive>
+		
+		<primitive id="tree4">
+			<cylinder base="0.3" top="0.3" height="10" slices="20" stacks="20" />
+        </primitive>
+		
+		 <primitive id="treeTop">
+            <sphere radius=1.0 slices="20" stacks="20" />
+        </primitive>
+
+        <primitive id="seat1">
+            <rectangle x1="0" y1="0" x2="2" y2="2" />
+        </primitive>
+		
+		 <primitive id="seat2">
+            <rectangle x1="0" y1="0" x2="2" y2="2" />
+        </primitive>
+		
+		 <primitive id="seat3">
+            <rectangle x1="0" y1="0" x2="2" y2="2" />
+        </primitive>
+		
+		<primitive id="seatLeg1">
+            <rectangle x1="0" y1="0" x2="0.5" y2="0.5" />
+        </primitive>
+		
+		<primitive id="seatLeg2">
+            <rectangle x1="0" y1="0" x2="0.5" y2="0.5" />
+        </primitive>
+		
+        <primitive id="papagaio">
+            <triangle x1="4" y1="5" z1="15" x2="5" y2="5" z2="15" x3="4.5" y3="7" z3="15" />
+        </primitive>
+
+    </primitives>
+
+    <components>
+
+        <component id="root" >
+
+            <transformation>
+                <translate x="0" y="0" z="0" />
+            </transformation>
+
+            <materials>
+                <material id="default" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+                <componentref id="floor" />
+            </children>
+
+        </component>
+
+        <component id="floor" >
+
+            <transformation>
+			<translate x= "0" y="0" z="0" />
+            </transformation>
+
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="text1" />
+
+            <children>
+                <primitiveref id="floor" />
+            </children>
+
+        </component>
+
+        </component>
+
+        <component id="tree1">
+
+            <transformation>
+                <translate x="1" y="4" z="0" />
+            </transformation>
+
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="text2" />
+
+            <children>
+                <primitiveref id="tree1" />
+                <primitiveref id="treeTop1" />
+            </children>
+
+        </component>
+
+
+        <component id="tree2">
+
+            <transformation>
+                <translate x="5" y="4" z="0" />
+            </transformation>
+
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="text2" />
+
+            <children>
+                <primitiveref id="tree2" />
+                <primitiveref id="treeTop2" />
+            </children>
+
+        </component>
+
+        <component id="tree3">
+
+            <transformation>
+                <translate x="4" y="1" z="0" />
+            </transformation>
+
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="text2" />
+
+            <children>
+                <primitiveref id="tree3" />
+                <primitiveref id="treeTop3" />
+            </children>
+
+        </component>
+
+       <component id="tree4">
+
+            <transformation>
+                <translate x="4" y="5" z="0" />
+            </transformation>
+
+            <materials>
+                <material id="inherit" />
+            </materials>
+
+            <texture id="text2" />
+
+            <children>
+                <primitiveref id="tree4" />
+                <primitiveref id="treeTop4" />
+            </children>
+
+        </component>
+		
+
+        <component id="treeTop1">
+
+            <transformation>
+                <rotate axis="x" angle="-90" />
+                <translate x="0" y="0" z="3" /> 
+            </transformation>
+
+            <materials>
+                <material id="greenStuff" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+                <primitiveref id="treeTop1" />
+            </children>
+
+        </component>
+		
+		
+        <component id="treeTop2">
+
+            <transformation>
+                <rotate axis="x" angle="-90" />
+                <translate x="0" y="0" z="3" /> 
+            </transformation>
+
+            <materials>
+                <material id="greenStuff" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+                <primitiveref id="treeTop2" />
+            </children>
+
+        </component>
+		
+		
+        <component id="treeTop3">
+
+            <transformation>
+                <rotate axis="x" angle="-90" />
+                <translate x="0" y="0" z="5" /> 
+            </transformation>
+
+            <materials>
+                <material id="greenStuff" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+                <primitiveref id="treeTop3" />
+            </children>
+
+        </component>
+		
+		
+        <component id="treeTop4">
+
+            <transformation>
+                <rotate axis="x" angle="-90" />
+                <translate x="0" y="0" z="10" /> 
+            </transformation>
+
+            <materials>
+                <material id="greenStuff" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+                <primitiveref id="treeTop4" />
+            </children>
+
+        </component>
+		
+		<component id="seat1">
+
+            <transformation>
+                <translate x="-3" y="1" z="2" />
+				<scale x="1.5" y="0.0" z="0.0" />
+            </transformation>
+
+            <materials>
+                <material id="graySeat" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+                <primitiveref id="seatLeg1" />
+                <primitiveref id="seatLeg2" />
+            </children>
+
+        </component>	
+		
+		<component id="seat2">
+
+            <transformation>
+                <translate x="7" y="1" z="2" />
+				<scale x="1.5" y="0.0" z="0.0" />
+            </transformation>
+
+            <materials>
+                <material id="graySeat" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+                <primitiveref id="seatLeg1" />
+                <primitiveref id="seatLeg2" />
+            </children>
+
+        </component>	
+
+		<component id="seat3">
+
+            <transformation>
+                <translate x="7" y="7" z="2" />
+				<scale x="1.5" y="0.0" z="0.0" />
+            </transformation>
+
+            <materials>
+                <material id="graySeat" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+                <primitiveref id="seatLeg1" />
+                <primitiveref id="seatLeg2" />
+            </children>
+
+        </component>	
+		
+		
+		<component id="seatLeg1">
+
+            <transformation>
+				<scale x="0.0" y="0.0" z="2.0" />
+            </transformation>
+
+            <materials>
+                <material id="graySeat" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+			<primitiveref id ="seatLeg1" />
+            </children>
+
+        </component>	
+		
+		<component id="seatLeg2">
+
+            <transformation>
+				<scale x="0.0" y="0.0" z="2.0" />
+            </transformation>
+
+            <materials>
+                <material id="graySeat" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+			<primitiveref id ="seatLeg2" />
+            </children>
+
+        </component>	
+		
+		
+		<component id="papagaio">
+
+            <transformation>
+			<translate x="0" y="0" z="0" />
+            </transformation>
+
+            <materials>
+                <material id="default" />
+            </materials>
+
+            <texture id="none" />
+
+            <children>
+			<primitiveref id ="papagaio" />
+            </children>
+
+        </component>
+		
+    </components>
+
+</dsx>

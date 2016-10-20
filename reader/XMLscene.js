@@ -12,6 +12,7 @@ XMLscene.prototype.init = function (application) {
     this.initCameras();
 
     this.initLights();
+    var graphRootId;
 
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -45,9 +46,43 @@ XMLscene.prototype.setDefaultAppearance = function () {
 // As loading is asynchronous, this may be called already after the application has started the run loop
 XMLscene.prototype.onGraphLoaded = function () 
 {
-	this.gl.clearColor(this.graph.background[0],this.graph.background[1],this.graph.background[2],this.graph.background[3]);
-	this.lights[0].setVisible(true);
-    this.lights[0].enable();
+	this.gl.clearColor(this.graph.illumination["background"]["r"],this.graph.illumination["background"]["g"],this.graph.illumination["background"]["b"],this.graph.illumination["background"]["a"]);
+	this.setGlobalAmbientLight(this.graph.illumination["ambient"]["r"],this.graph.illumination["ambient"]["g"],this.graph.illumination["ambient"]["b"],this.graph.illumination["ambient"]["a"]);
+	// this.lights[0].setVisible(true);
+ //    this.lights[0].enable();
+
+ 	graphRootId=this.graph.scene["root"];
+
+ 	//create and enable lights
+ 	this.allLightsIds =[];
+    for(var i=0;i<this.graph.lights.length;i++){
+    	var temp_light=this.graph.lights[i];
+    	var id=temp_light["id"];
+    	this.allLightsIds[i]=id;
+    	if(temp_light["type"]=="omni"){
+    		if(temp_light["enabled"]==1){
+    			this.lights[id].setVisible(true);
+    			this.lights[id].enable();
+    		}
+    		this.lights[id].setPosition(temp_light["location"]["x"], temp_light["location"]["y"], temp_light["location"]["z"], temp_light["location"]["w"]);
+    		this.lights[id].setAmbient(temp_light["ambient"]["r"], temp_light["ambient"]["g"], temp_light["ambient"]["b"], temp_light["ambient"]["a"]);
+    		this.lights[id].setDiffuse(temp_light["diffuse"]["r"], temp_light["diffuse"]["g"], temp_light["diffuse"]["b"], temp_light["diffuse"]["a"]);
+    		this.lights[id].setSpecular(temp_light["specular"]["r"], temp_light["specular"]["g"], temp_light["specular"]["b"], temp_light["specular"]["a"]);
+    	}
+    	else if(temp_light[type]=="spot"){
+    		if(temp_light["enabled"]==1){
+    			this.lights[id].setVisible(true);
+    			this.lights[id].enable();
+    		}
+    		//not sure about these 2
+    		this.lights[id].setSpotExponent(temp_light["exponent"]);
+    		this.lights[id].setSpotDirection(temp_light["target"]["x"], temp_light["target"]["y"], temp_light["target"]["z"]);
+    		this.lights[id].setPosition(temp_light["location"]["x"], temp_light["location"]["y"], temp_light["location"]["z"], temp_light["location"]["w"]);
+    		this.lights[id].setAmbient(temp_light["ambient"]["r"], temp_light["ambient"]["g"], temp_light["ambient"]["b"], temp_light["ambient"]["a"]);
+    		this.lights[id].setDiffuse(temp_light["diffuse"]["r"], temp_light["diffuse"]["g"], temp_light["diffuse"]["b"], temp_light["diffuse"]["a"]);
+    		this.lights[id].setSpecular(temp_light["specular"]["r"], temp_light["specular"]["g"], temp_light["specular"]["b"], temp_light["specular"]["a"]);
+    	}
+    }
 };
 
 XMLscene.prototype.display = function () {
