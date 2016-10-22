@@ -116,8 +116,8 @@
 			<cylinder base="0.3" top="0.3" height="10" slices="20" stacks="20" />
         </primitive>
 		
-		 <primitive id="treeTop">
-            <sphere radius=1.0 slices="20" stacks="20" />
+        <primitive id="treetop">
+            <sphere radius="1" slices="20" stacks="20" />            
         </primitive>
 
         <primitive id="seat1">

@@ -51,7 +51,7 @@ XMLscene.prototype.onGraphLoaded = function ()
 	// this.lights[0].setVisible(true);
  //    this.lights[0].enable();
 
- 	graphRootId=this.graph.scene["root"];
+ 	graphRootId=this.graph.scene2["root"];
 
  	//create and enable lights
  	this.allLightsIds =[];
@@ -86,6 +86,53 @@ XMLscene.prototype.onGraphLoaded = function ()
     	   console.log("created spot light with id:"+id);
         }
     }
+
+
+    //CREATE MATERIALS
+    this.mats=[];
+    this.allMatsIds =[];
+    for(var i=0;i<this.graph.materials.length;i++){
+        var temp_mat=this.graph.materials[i];
+        var id=temp_mat["id"];
+        this.allMatsIds[i]=id;
+
+        var mat = new CGFappearance(this);
+        mat.setEmission(temp_mat["emission"]["r"],temp_mat["emission"]["g"],temp_mat["emission"]["b"],temp_mat["emission"]["a"]);
+        mat.setAmbient(temp_mat["ambient"]["r"],temp_mat["ambient"]["g"],temp_mat["ambient"]["b"],temp_mat["ambient"]["a"])
+        mat.setDiffuse(temp_mat["diffuse"]["r"],temp_mat["diffuse"]["g"],temp_mat["diffuse"]["b"],temp_mat["diffuse"]["a"])
+        mat.setSpecular(temp_mat["specular"]["r"],temp_mat["specular"]["g"],temp_mat["specular"]["b"],temp_mat["specular"]["a"])
+        mat.setShininess(temp_mat["shininess"]["value"]);
+        this.mats[i]=mat;
+    }
+
+    //CREATE TEXTURES
+    this.txts=[];
+    this.allTextsIds =[];
+    this.amp_fact=[];
+    for(var i=0;i<this.graph.textures.length;i++){
+        var temp_txt=this.graph.textures[i];
+        var id=temp_txt["id"];
+        this.allMatsIds[i]=id;
+
+        var text = new CGFappearance(this);
+        text.loadTexture(temp_txt["file"]);
+
+        this.amp_fact[i]=[];
+        this.amp_fact[i]["s"]=this.graph.textures["length_s"];
+        this.amp_fact[i]["t"]=this.graph.textures["length_t"];
+
+        this.txts[id]=text;
+    }
+
+    this.prims=[];
+    console.log(this.graph.primitive);
+    for(var i=0;i<this.graph.primitive.length;i++){
+        var temp_prim=this.graph.primitive[i];
+        var id=temp_prim["id"];
+        console.log(temp_prim["type"]);
+        this.prims[id]= new Element(this, temp_prim['type'], temp_prim['args']);
+    }
+    console.log(this.prims);
 };
 
 XMLscene.prototype.display = function () {
@@ -102,6 +149,8 @@ XMLscene.prototype.display = function () {
 	// Apply transformations corresponding to the camera position relative to the origin
 	this.applyViewMatrix();
 
+
+
 	// Draw axis
 	this.axis.display();
 
@@ -114,7 +163,31 @@ XMLscene.prototype.display = function () {
 	// This is one possible way to do it
 	if (this.graph.loadedOk)
 	{
-		this.lights[0].update();
+        for(var i=0;i<this.lights.length;i++){
+            this.lights[i].update();
+        }
+       // var t = new Element(this,"torus",[0.2,0.7,8,20]);
+       // t.display();
+         this.SceneDisplay(this.graph.scene2["root"]);
 	};	
 };
 
+XMLscene.prototype.SceneDisplay = function(id){
+    this.pushMatrix();
+
+
+    //mut de matrizes
+    this.multMatrix(this.graph.components[id].m);
+    if(this.graph.components[id].comp_descendents.length>0){
+        for(var i=0;i<this.graph.components[id].comp_descendents.length;i++){
+            this.SceneDisplay(this.graph.components[id].comp_descendents[i]);
+        }
+    }else{
+        for(var k=0;k<this.graph.components[id].prim_descendents.length;k++){
+            var prim_id=this.graph.components[id].prim_descendents[k];
+            this.prims[prim_id].display();
+        }
+    }
+
+    this.popMatrix();
+};

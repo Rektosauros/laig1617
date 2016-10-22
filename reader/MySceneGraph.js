@@ -372,6 +372,7 @@ MySceneGraph.prototype.parseTextures = function(rootElement){
 	for(var i=0;i<nrChildrens;i++){
 		var values=[];
 		var id = this.reader.getString(elems[0].children[i],'id',true);
+		values["id"]=id;
 		if(this.idExists(ids,id)==true)
 			return "view with ID "+id+" already exists";
 		ids.push(id);
@@ -382,16 +383,18 @@ MySceneGraph.prototype.parseTextures = function(rootElement){
 		values["length_t"]=this.reader.getFloat(children,'length_t',true);
 
 		
-		this.textures[id]=values;
+		this.textures[i]=values;
 	}
 };
 
 MySceneGraph.prototype.parseMaterials = function(rootElement){
 	var elems = rootElement.getElementsByTagName('materials');
+	console.log("HELLO");
 	if(elems==null)
 		return "materials element is missing";
-
+	console.log(elems);
 	var nr_materials=elems[0].children.length;
+
 	var ids=[];
 	for(var i=0;i<nr_materials;i++){
 		var mat=elems[0].children[i];
@@ -400,6 +403,7 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 		if(this.idExists(ids,id)==true)
 			return "view with ID "+id+" already exists";
 		ids.push(id);
+		values["id"]=id
 
 		var emission=mat.children[0];
 		values["emission"]=[];
@@ -437,7 +441,7 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 		values["shininess"]=[];
 		values["shininess"]["value"]=this.reader.getFloat(shininess,'value',true);
 
-		this.materials[id]=values;
+		this.materials[i]=values;
 	}
 };
 
@@ -516,65 +520,79 @@ MySceneGraph.prototype.parsePrimitives=function(rootElement){
 		if(this.idExists(ids,id)==true)
 			return "view with ID "+id+" already exists";
 		ids.push(id);
+		value["id"]=id
 
 		// console.log(i);
 		// console.log(prim.children[0].tagName);
+		console.log(prim.children[0]);
 		switch(prim.children[0].tagName){
 				case 'rectangle':
 					var rect = prim.children[0];
 					value["type"]=rect.tagName;
-					value["x1"]=this.reader.getFloat(rect,'x1',true);
-					value["y1"]=this.reader.getFloat(rect,'y1',true);
-					value["x2"]=this.reader.getFloat(rect,'x2',true);
-					value["y2"]=this.reader.getFloat(rect,'y2',true);
-					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {x1=" + value["x1"] + ", y1=" + value["y1"] + ", x2=" +value["x2"]+ ", y2=" +value["y2"]  + "}");
+					var args=[];
+					args.push(this.reader.getFloat(rect,'x1',true));
+					args.push(this.reader.getFloat(rect,'y1',true));
+					args.push(this.reader.getFloat(rect,'x2',true));
+					args.push(this.reader.getFloat(rect,'y2',true));
+					value["args"]=args;
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {x1=" + args[0] + ", y1=" + args[1] + ", x2=" +args[2]+ ", y2=" +args[3]  + "}");
 					break;
 				case 'triangle':
 					var tri = prim.children[0];
 					value["type"]=tri.tagName;
-					value["x1"]=this.reader.getFloat(tri,'x1',true);
-					value["y1"]=this.reader.getFloat(tri,'y1',true);
-					value["z1"]=this.reader.getFloat(tri,'z1',true);
-					value["x2"]=this.reader.getFloat(tri,'x2',true);
-					value["y2"]=this.reader.getFloat(tri,'y2',true);
-					value["z2"]=this.reader.getFloat(tri,'z2',true);
-					value["x3"]=this.reader.getFloat(tri,'x3',true);
-					value["y3"]=this.reader.getFloat(tri,'y3',true);
-					value["z3"]=this.reader.getFloat(tri,'z3',true);
-					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {x1=" + value["x1"] + ", y1=" + value["y1"] + ", z1=" +value["z1"]+ ", x2=" +value["x2"]  + ", y2=" +value["y2"]  + ", z2=" +value["z2"]  + ", x3=" +value["x3"]  +", y3=" +value["y3"]  +", z3=" +value["z3"]  +"}");
+					var args=[];
+					args.push(this.reader.getFloat(tri,'x1',true));
+					args.push(this.reader.getFloat(tri,'y1',true));
+					args.push(this.reader.getFloat(tri,'z1',true));
+					args.push(this.reader.getFloat(tri,'x2',true));
+					args.push(this.reader.getFloat(tri,'y2',true));
+					args.push(this.reader.getFloat(tri,'z2',true));
+					args.push(this.reader.getFloat(tri,'x3',true));
+					args.push(this.reader.getFloat(tri,'y3',true));
+					args.push(this.reader.getFloat(tri,'z3',true));
+					value["args"]=args;
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {x1=" + args[0] + ", y1=" + args[1] + ", z1=" +args[2]+ ", x2=" +args[3]  + ", y2=" +args[4]  + ", z2=" +args[5] + ", x3=" +args[6]  +", y3=" +args[7]  +", z3=" +args[8]  +"}");
 					break;
 				case 'cylinder':
 					var cyl = prim.children[0];
 					value["type"]=cyl.tagName;
-					value["base"]=this.reader.getFloat(cyl,'base',true);
-					value["top"]=this.reader.getFloat(cyl,'top',true);
-					value["height"]=this.reader.getFloat(cyl,'height',true);
-					value["slices"]=this.reader.getInteger(cyl,'slices',true);
-					value["stacks"]=this.reader.getInteger(cyl,'stacks',true);
-					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {base=" + value["base"] + ", top=" + value["top"] + ", height=" +value["height"]+ ", slices=" +value["slices"]  + ", stacks=" +value["stacks"]  +"}");
+					var args=[];
+					args.push(this.reader.getFloat(cyl,'base',true));
+					args.push(this.reader.getFloat(cyl,'top',true));
+					args.push(this.reader.getFloat(cyl,'height',true));
+					args.push(this.reader.getInteger(cyl,'slices',true));
+					args.push(this.reader.getInteger(cyl,'stacks',true));
+					value["args"]=args;
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {base=" + args[0] + ", top=" + args[1] + ", height=" +args[2]+ ", slices=" +args[3]  + ", stacks=" +args[4]  +"}");
 					break;
 				case 'sphere':
 					var sph=prim.children[0];
 					value["type"]=sph.tagName;
-					value["radius"]=this.reader.getFloat(sph,'radius',true);
-					value["slices"]=this.reader.getInteger(sph,'slices',true);
-					value["stacks"]=this.reader.getInteger(sph,'stacks',true);
-					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {reader=" + value["radius"] + ", slices=" + value["slices"] + ", stacks=" +value["stacks"]+  "}");
+					var args=[];
+					args.push(this.reader.getFloat(sph,'radius',true));
+					args.push(this.reader.getInteger(sph,'slices',true));
+					args.push(this.reader.getInteger(sph,'stacks',true));
+					value["args"]=args;
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {radius=" + args[0] + ", slices=" + args[1] + ", stacks=" +args[2]+  "}");
 					break;
 				case 'torus':
 					var tor=prim.children[0];
 					value["type"]=tor.tagName;
-					value["inner"]=this.reader.getFloat(tor,'inner',true);
-					value["outer"]=this.reader.getFloat(tor,'outer',true);
-					value["slices"]=this.reader.getInteger(tor,'slices',true);
-					value["loops"]=this.reader.getInteger(tor,'loops',true);
-					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {inner=" + value["inner"] + ", outer=" + value["outer"] + ", slices=" +value["slices"]+ ", loops=" +value["loops"]  + "}");
+					var args=[];
+					args.push(this.reader.getFloat(tor,'inner',true));
+					args.push(this.reader.getFloat(tor,'outer',true));
+					args.push(this.reader.getInteger(tor,'slices',true));
+					args.push(this.reader.getInteger(tor,'loops',true));
+					value["args"]=args;
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {inner=" + args[0]+ ", outer=" + args[1] + ", slices=" +args[2]+ ", loops=" +args[3]  + "}");
 					break;
 				default:
 					return "primitive with id "+id+" not recognized";
 			}
-			this.primitive[id]=value;
+			// console.log(value);
+			this.primitive[i]=value; 
 	}
+	console.log(this.primitive);
 };
 
 MySceneGraph.prototype.parseComponents = function(rootElement){
@@ -611,6 +629,7 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 						var y=this.reader.getFloat(transl,'y',true);
 						var z=this.reader.getFloat(transl,'z',true);
 						mat4.translate(m,m,[x,y,z]);
+						node.setMatrix(m);
 						console.log("translation of component "+comp_id+" with the values: x:"+x+", y:"+y+", z:"+z);
 						break;
 					case 'rotate':
@@ -631,7 +650,8 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 							break;
 					}
 						var angle=this.reader.getFloat(rot,'angle',true);
-						mat4.rotate(m,m, (Math.PI +angle) / 180, axis);
+						mat4.rotate(m,m, (Math.PI *angle) / 180, axis);
+						node.setMatrix(m);
 						console.log("Rotation of component "+comp_id+" with the values: axis:"+ax+", angle:"+angle);
 						break;
 					case 'scale':
@@ -641,13 +661,15 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 						var sy=this.reader.getFloat(scale,'y',true);
 						var sz=this.reader.getFloat(scale,'z',true);
 						mat4.scale(m,m,[sx,sy,sz]);
+						node.setMatrix(m);
 						console.log("Scale of component "+comp_id+" with the values: sx:"+sx+", sy:"+sy+", sz:"+sz);
 						break;
 					default:
 						return "trasnformation on component with id "+comp_id+" not recognized";
 				}
+
 			}
-			node.setMatrix(m);
+			
 		}
 		var mats = comp.children[1];
 		n_mats=mats.children.length;
@@ -681,6 +703,7 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 		}
 		this.components[node.id]=node;
 	}
+	console.log(this.components);
 };
 MySceneGraph.prototype.idExists = function(IDs, id) {
 	var exists = false;
@@ -701,5 +724,5 @@ MySceneGraph.prototype.onXMLError=function (message) {
 	console.error("XML Loading Error: "+message);
 	this.loadedOk=false;
 };
-   
+
 
