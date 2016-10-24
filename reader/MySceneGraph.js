@@ -454,19 +454,23 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 
 	var nr_transf=elems[0].children.length;
 	var ids=[];
+	console.log(nr_transf)
 	for(var i=0;i<nr_transf;i++){
 		var transf=elems[0].children[i];
 		var all_transf=[];
 		var id=this.reader.getString(transf,'id',true);
+		console.log(id);
+
 		if(this.idExists(ids,id)==true)
 			return "trasnformation with ID "+id+" already exists";
 		ids.push(id);
 
 		var m= mat4.create();
 		var nr_ch=transf.children.length;
-		for(var k=0;i<nr_ch;i++){
+		for(var k=0;k<nr_ch;k++){
 
 			var values =[];
+			console.log(transf.children[k].tagName)
 			switch(transf.children[k].tagName){
 				case 'translate':
 					var transl = transf.children[k];
@@ -620,7 +624,8 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 		if(transf.children[0]!=null){
 			if(transf.children[0].tagName=='transformationref'){
 				var transf_id=this.reader.getString(transf.children[0],'id',true);
-
+				console.log(transf_id);
+				console.log(this.transformations)
 				node.setMatrix(this.transformations[transf_id]);
 			}else{
 				// value["trasformation"]["transformationref"]=-1; //default value to check if theres a transf_ref
@@ -675,7 +680,8 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 				}
 				
 			}
-		}
+		}else
+			node.setMatrix(m);
 		
 		var mats = comp.children[1];
 		n_mats=mats.children.length;
