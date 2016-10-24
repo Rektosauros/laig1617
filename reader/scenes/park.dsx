@@ -1,11 +1,11 @@
 <dsx>
 
-    <scene root="root" axis_length="2" />
+    <scene root="root" axis_length="3" />
 
     <views default="vista1" >
 
         <perspective id="vista1" near="0.5" far="800.0" angle="0.4">
-            <from x="40" y="0.0" z="40.0" />
+            <from x="80" y="0.0" z="80.0" />
             <to x="0.0" y="0.0" z="0.0" />
         </perspective>
 
@@ -54,6 +54,14 @@
 
     <materials>
 
+		<material id="default" >
+            <emission r="0.1" g="0.1" b="0.1" a="1" />
+            <ambient r="1" g="1" b="1" a="1" />
+            <diffuse r="1" g="0.0" b="0.0" a="1" />
+            <specular r="1" g="1" b="1" a="1" />
+            <shininess value="10" />
+        </material>
+	
         <material id="graySeat" >
             <emission r="0.3" g="0.3" b="0.3" a="1" />
             <ambient r="0.3" g="0.3" b="0.3" a="1" />
@@ -70,13 +78,6 @@
             <shininess value="10" />
         </material>
 
-        <material id="default" >
-            <emission r="0.1" g="0.1" b="0.1" a="1" />
-            <ambient r="1" g="1" b="1" a="1" />
-            <diffuse r="1" g="0.0" b="0.0" a="1" />
-            <specular r="1" g="1" b="1" a="1" />
-            <shininess value="10" />
-        </material>
 
     </materials>
 
@@ -154,7 +155,7 @@
             </transformation>
 
             <materials>
-                <material id="inherit" />
+                <material id="default" />
             </materials>
 
             <texture id="text1" />
@@ -168,10 +169,11 @@
 		<component id="BaseP">
 
             <transformation>
+			 <translate x="0" y="0" z="0" />
             </transformation>
 
             <materials>
-                <material id="inherit" />
+                <material id="default" />
             </materials>
 
             <texture id="text2" />
@@ -185,10 +187,11 @@
 		<component id="BaseG">
 
             <transformation>
+			 <translate x="0" y="0" z="0" />
             </transformation>
 
             <materials>
-                <material id="inherit" />
+                <material id="default" />
             </materials>
 
             <texture id="text2" />
@@ -207,10 +210,10 @@
             </transformation>
 
             <materials>
-                <material id="inherit" />
+                <material id="greenStuff" />
             </materials>
 
-            <texture id="greenStuff" />
+            <texture id="none" />
 
             <children>
                 <primitiveref id="treetop" />
@@ -226,10 +229,10 @@
             </transformation>
 
             <materials>
-                <material id="inherit" />
+                <material id="greenStuff" />
             </materials>
 
-            <texture id="greenStuff" />
+            <texture id="none" />
 
             <children>
                 <primitiveref id="treetop" />

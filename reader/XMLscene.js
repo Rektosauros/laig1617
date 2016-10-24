@@ -200,13 +200,12 @@ XMLscene.prototype.SceneDisplay = function(id){
    
     var texture = new CGFappearance(this);
     var mat;
-    var noneed = id;
 	
-    if(this.graph.components[materialsIndex].default_mat=="inherit"){
+    if(this.graph.components[id].default_mat=="inherit"){
         this.stackmaterial.push(this.stackmaterial.top());
         // console.log(mat);
     }else{
-        this.stackmaterial.push(this.graph.components[materialsIndex].default_mat);
+        this.stackmaterial.push(this.graph.components[id].default_mat);
         var mat = this.stackmaterial.top();
         // console.log(mat);
         this.stackmaterial.pop()
@@ -233,7 +232,7 @@ XMLscene.prototype.SceneDisplay = function(id){
         this.stacktexture.push(this.txts[this.graph.components[id].texture]);
         console.log(this.stacktexture.top());
         texture.setTexture(this.stacktexture.top());
-         texture.apply();
+         //texture.apply();
     }
     this.stacktexture.pop();
     
