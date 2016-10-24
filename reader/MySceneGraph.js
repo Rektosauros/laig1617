@@ -441,8 +441,10 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 		values["shininess"]=[];
 		values["shininess"]["value"]=this.reader.getFloat(shininess,'value',true);
 
-		this.materials[i]=values;
+		this.materials[id]=values;
+		console.log(values);
 	}
+	console.log(this.materials);
 };
 
 MySceneGraph.prototype.parseTransformations = function(rootElement){
@@ -489,7 +491,7 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 							break;
 					}
 					var angle=this.reader.getFloat(rot,'angle',true);
-					mat4.rotate(m,m, (Math.PI +angle) / 180, axis);
+					mat4.rotate(m,m, (Math.PI *angle) / 180, axis);
 					break;
 				case 'scale':
 					var scale = transf.children[k];
