@@ -616,63 +616,67 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 		var m = mat4.create();
 
 		var transf=comp.children[0];
-		if(transf.children[0].tagName=='transformationref'){
-			var transf_id=this.reader.getString(transf.children[0],'id',true);
+		console.log(comp);
+		if(transf.children[0]!=null){
+			if(transf.children[0].tagName=='transformationref'){
+				var transf_id=this.reader.getString(transf.children[0],'id',true);
 
-			node.setMatrix(this.transformations[transf_id]);
-		}else{
-			// value["trasformation"]["transformationref"]=-1; //default value to check if theres a transf_ref
-			for(k=0;k<transf.children.length;k++){
-				switch(transf.children[k].tagName){
-					case 'translate':
-						var transl = transf.children[k];
-						//value["type"]=transl.tagName;
-						var x=this.reader.getFloat(transl,'x',true);
-						var y=this.reader.getFloat(transl,'y',true);
-						var z=this.reader.getFloat(transl,'z',true);
-						mat4.translate(m,m,[x,y,z]);
-						node.setMatrix(m);
-						console.log("translation of component "+comp_id+" with the values: x:"+x+", y:"+y+", z:"+z);
-						break;
-					case 'rotate':
-						var rot = transf.children[k];
-						//value["type"]=transl.tagName;
-						switch (this.reader.getItem(rot,'axis',['x','y','z'],true)) {
-						case "x":
-							axis = [1, 0, 0];
-							var ax="x";
+				node.setMatrix(this.transformations[transf_id]);
+			}else{
+				// value["trasformation"]["transformationref"]=-1; //default value to check if theres a transf_ref
+				for(k=0;k<transf.children.length;k++){
+					switch(transf.children[k].tagName){
+						case 'translate':
+							var transl = transf.children[k];
+							//value["type"]=transl.tagName;
+							var x=this.reader.getFloat(transl,'x',true);
+							var y=this.reader.getFloat(transl,'y',true);
+							var z=this.reader.getFloat(transl,'z',true);
+							mat4.translate(m,m,[x,y,z]);
+							node.setMatrix(m);
+							console.log("translation of component "+comp_id+" with the values: x:"+x+", y:"+y+", z:"+z);
 							break;
-						case "y":
-							axis = [0, 1, 0];
-							var ax="y";
+						case 'rotate':
+							var rot = transf.children[k];
+							//value["type"]=transl.tagName;
+							switch (this.reader.getItem(rot,'axis',['x','y','z'],true)) {
+							case "x":
+								axis = [1, 0, 0];
+								var ax="x";
+								break;
+							case "y":
+								axis = [0, 1, 0];
+								var ax="y";
+								break;
+							case "z":
+								axis = [0, 0, 1];
+								var ax="z";
+								break;
+						}
+							var angle=this.reader.getFloat(rot,'angle',true);
+							mat4.rotate(m,m, (Math.PI *angle) / 180, axis);
+							node.setMatrix(m);
+							console.log("Rotation of component "+comp_id+" with the values: axis:"+ax+", angle:"+angle);
 							break;
-						case "z":
-							axis = [0, 0, 1];
-							var ax="z";
+						case 'scale':
+							var scale = transf.children[k];
+							//value["type"]=transl.tagName;
+							var sx=this.reader.getFloat(scale,'x',true);
+							var sy=this.reader.getFloat(scale,'y',true);
+							var sz=this.reader.getFloat(scale,'z',true);
+							mat4.scale(m,m,[sx,sy,sz]);
+							node.setMatrix(m);
+							console.log("Scale of component "+comp_id+" with the values: sx:"+sx+", sy:"+sy+", sz:"+sz);
 							break;
+						default:
+							return "trasnformation on component with id "+comp_id+" not recognized";
 					}
-						var angle=this.reader.getFloat(rot,'angle',true);
-						mat4.rotate(m,m, (Math.PI *angle) / 180, axis);
-						node.setMatrix(m);
-						console.log("Rotation of component "+comp_id+" with the values: axis:"+ax+", angle:"+angle);
-						break;
-					case 'scale':
-						var scale = transf.children[k];
-						//value["type"]=transl.tagName;
-						var sx=this.reader.getFloat(scale,'x',true);
-						var sy=this.reader.getFloat(scale,'y',true);
-						var sz=this.reader.getFloat(scale,'z',true);
-						mat4.scale(m,m,[sx,sy,sz]);
-						node.setMatrix(m);
-						console.log("Scale of component "+comp_id+" with the values: sx:"+sx+", sy:"+sy+", sz:"+sz);
-						break;
-					default:
-						return "trasnformation on component with id "+comp_id+" not recognized";
-				}
 
+				}
+				
 			}
-			
 		}
+		
 		var mats = comp.children[1];
 		n_mats=mats.children.length;
 		for(k=0;k<n_mats;k++){

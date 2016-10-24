@@ -139,10 +139,10 @@ XMLscene.prototype.onGraphLoaded = function ()
     // var teste2=teste.pop();
 
     
-    console.log(teste[teste.length-1]);
+    // console.log(teste[teste.length-1]);
 
     
-    console.log(this.txts[this.graph.components["floor"].texture]);
+    console.log(this.graph.components);
 };
 
 XMLscene.prototype.display = function () {
@@ -194,43 +194,43 @@ XMLscene.prototype.display = function () {
 XMLscene.prototype.SceneDisplay = function(id){
     
    
-    var texture = new CGFappearance(this);
-    var mat;
+    // var texture = new CGFappearance(this);
+    // var mat;
     
-    if(this.graph.components[id].default_mat=="inherit"){
-        this.stackmaterial.push(this.stackmaterial.top());
-        // console.log(mat);
-    }else{
-        this.stackmaterial.push(this.graph.components[id].default_mat);
-        var mat = this.stackmaterial.top();
-        // console.log(mat);
-        this.stackmaterial.pop()
-        // mat.apply();
-    }
+    // if(this.graph.components[id].default_mat=="inherit"){
+    //     this.stackmaterial.push(this.stackmaterial.top());
+    //     // console.log(mat);
+    // }else{
+    //     this.stackmaterial.push(this.graph.components[id].default_mat);
+    //     var mat = this.stackmaterial.top();
+    //     // console.log(mat);
+    //     this.stackmaterial.pop()
+    //     // mat.apply();
+    // }
 
-    if(mat!=null){
-        var temp_mat=this.graph.materials[mat];
-        // console.log(temp_mat);
+    // if(mat!=null){
+    //     var temp_mat=this.graph.materials[mat];
+    //     // console.log(temp_mat);
         
-        texture.setEmission(temp_mat["emission"]["r"],temp_mat["emission"]["g"],temp_mat["emission"]["b"],temp_mat["emission"]["a"]);
-        texture.setAmbient(temp_mat["ambient"]["r"],temp_mat["ambient"]["g"],temp_mat["ambient"]["b"],temp_mat["ambient"]["a"])
-        texture.setDiffuse(temp_mat["diffuse"]["r"],temp_mat["diffuse"]["g"],temp_mat["diffuse"]["b"],temp_mat["diffuse"]["a"])
-        texture.setSpecular(temp_mat["specular"]["r"],temp_mat["specular"]["g"],temp_mat["specular"]["b"],temp_mat["specular"]["a"])
-        texture.setShininess(temp_mat["shininess"]["value"]);
-    }
+    //     texture.setEmission(temp_mat["emission"]["r"],temp_mat["emission"]["g"],temp_mat["emission"]["b"],temp_mat["emission"]["a"]);
+    //     texture.setAmbient(temp_mat["ambient"]["r"],temp_mat["ambient"]["g"],temp_mat["ambient"]["b"],temp_mat["ambient"]["a"])
+    //     texture.setDiffuse(temp_mat["diffuse"]["r"],temp_mat["diffuse"]["g"],temp_mat["diffuse"]["b"],temp_mat["diffuse"]["a"])
+    //     texture.setSpecular(temp_mat["specular"]["r"],temp_mat["specular"]["g"],temp_mat["specular"]["b"],temp_mat["specular"]["a"])
+    //     texture.setShininess(temp_mat["shininess"]["value"]);
+    // }
 
     
-    // var tex = this.txts[this.graph.components[id].texture];
-    if(this.graph.components[id].texture=="inherit"){
-        this.stacktexture.push(this.stacktexture.top());
+    // // var tex = this.txts[this.graph.components[id].texture];
+    // if(this.graph.components[id].texture=="inherit"){
+    //     this.stacktexture.push(this.stacktexture.top());
         
-    }else if(this.graph.components[id].texture!="none"){
-        this.stacktexture.push(this.txts[this.graph.components[id].texture]);
-        console.log(this.stacktexture.top());
-        texture.setTexture(this.stacktexture.top());
-        // texture.apply();
-    }
-    this.stacktexture.pop();
+    // }else if(this.graph.components[id].texture!="none"){
+    //     this.stacktexture.push(this.txts[this.graph.components[id].texture]);
+    //     console.log(this.stacktexture.top());
+    //     texture.setTexture(this.stacktexture.top());
+    //     // texture.apply();
+    // }
+    // this.stacktexture.pop();
     
 
 

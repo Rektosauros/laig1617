@@ -148,9 +148,9 @@
         <component id="floor" >
 
             <transformation>
-			<translate x= "12" y="0" z="8" />
-			<rotate axis="x" angle="-90"/>		
-			<scale x="6" y="8" z="1"
+    			<translate x= "12" y="0" z="8" />
+    			<rotate axis="x" angle="-90"/>		
+    			<scale x="6" y="8" z="1"/>
             </transformation>
 
             <materials>
