@@ -200,7 +200,6 @@ XMLscene.prototype.SceneDisplay = function(id){
    
     var texture = new CGFappearance(this);
     var mat;
-	
     if(this.graph.components[id].default_mat=="inherit"){
         this.stackmaterial.push(this.stackmaterial.top());
         // console.log(mat);
@@ -287,3 +286,16 @@ XMLscene.prototype.updateMaterial = function(){
   }
   console.log(this.materialIndex);
 }
+/*
+XMLscene.prototype.update = function(currTime){
+	
+	var lastTime = this.lastTime || currTime;
+	this.lastTime = currTime;
+	
+	var deltaTime = currTime-lastTime;
+
+	console.log('Im updating... \n');
+	
+	this.graph.update(deltaTime);
+}
+*/

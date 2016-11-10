@@ -119,7 +119,7 @@
 
     <components>
 
-        <component id="root" >
+ <!--       <component id="root" >
 
             <transformation>
                 <translate x="0" y="0" z="0" />
@@ -164,7 +164,7 @@
                 <primitiveref id="retangulo" />
             </children>
 
-        </component>
+        </component>  -->
 
 		<component id="BaseP">
 
@@ -321,7 +321,7 @@
         </component>
 
 		
-		<component id="seatTop">
+	<!--	<component id="seatTop">
 
             <transformation>
 				translate x="0" y="0" z="1.5"
@@ -479,7 +479,7 @@
 			<primitiveref id ="thorus" />
             </children>
 
-        </component>
+        </component>   -->
 		
     </components>
 

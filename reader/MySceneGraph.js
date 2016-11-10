@@ -17,6 +17,7 @@ function MySceneGraph(filename, scene) {
 	this.transformations=[];
 	this.primitive=[];
 	this.components=[];
+	//this.updates=[];
 
 		
 	// File reading 
@@ -737,4 +738,15 @@ MySceneGraph.prototype.onXMLError=function (message) {
 	this.loadedOk=false;
 };
 
-
+/*
+MySceneGraph.prototype.update = function(deltaTime) {
+	
+	for (var i = 0; i < this.updates.length(); i++)
+		{
+		
+		this.updates[i];
+		
+		}
+	
+}
+*/
