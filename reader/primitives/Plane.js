@@ -1,7 +1,7 @@
 
 /** Represents a plane with nrDivs divisions along both axis, with center at (0,0) */
 
-function Plane(scene, uDivs, vDivs) {
+function Plane(scene, dimX, dimY, uDivs, vDivs) {
 
 	// nrDivs = 1 if not provided
 	uDivs = typeof uDivs !== 'undefined' ? uDivs : 1;
@@ -9,19 +9,22 @@ function Plane(scene, uDivs, vDivs) {
 
 	this.uDivs = uDivs;
 	this.vDivs = vDivs;
-	//this.patchLength = 1.0 / nrDivs; - need to end patch.
+	this.dimX = dimX;
+	this.dimY = dimY;
+	this.cPoints = []; // need to be initialized, dimX/2 and dimY/2
+	
+	
+	this.plano = new Patch(this.scene, 1, 1, this.uDivs, this.vDivs, this.cPoints);
+	
 };
 
-Plane.prototype = new CGFnurbsObject(this, func, uDivs, vDivs);
+Plane.prototype = Object.create(Plane.prototype);
 Plane.prototype.constructor = Plane;
 
 
-
-/*
-Plane.prototype.display = function() {
+Plane.prototype.display = function() 
+{
 	
-	this.vector.display(); ????
-	
+	this.plano.display();
 	
 }
-*/

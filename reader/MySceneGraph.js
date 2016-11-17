@@ -513,6 +513,14 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 	}
 };
 
+MySceneGraph.prototype.parseAnimations = function(rootElement){
+	
+var elems = rootElement.getElementsByTagName('Animations');
+
+
+
+}
+
 MySceneGraph.prototype.parsePrimitives=function(rootElement){
 	var elems = rootElement.getElementsByTagName('primitives');
 	if(elems==null)
@@ -740,12 +748,12 @@ MySceneGraph.prototype.onXMLError=function (message) {
 
 /*
 MySceneGraph.prototype.update = function(deltaTime) {
-	
-	for (var i = 0; i < this.updates.length(); i++)
+
+		for (var i = 0; i < this.animations.length(); i++)
 		{
-		
-		this.updates[i];
-		
+			
+			this.animations[i].update();
+			
 		}
 	
 }
