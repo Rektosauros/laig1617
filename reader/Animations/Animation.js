@@ -1,9 +1,10 @@
-class Animation {
+function Animation(){}
 	
-	constructor(id, time) 
-	{
-		this.id = id;
-		this.time = time;
-	}
+	
+Animation.prototype.constructor = Animation;
+
+Animation.prototype.init = function(id) 
+{
+	this.id = id;
 	
 }
