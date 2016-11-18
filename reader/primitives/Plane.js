@@ -11,7 +11,10 @@ function Plane(scene, dimX, dimY, uDivs, vDivs) {
 	this.vDivs = vDivs;
 	this.dimX = dimX;
 	this.dimY = dimY;
-	this.cPoints = []; // need to be initialized, dimX/2 and dimY/2
+	this.cPoints = [[-dimX/2, -dimY/2, 0],
+					[-dimX/2, dimY/2, 0]
+					[dimX/2, -dimY/2, 0]
+					[dimX/2, dimY/2, 0]];
 	
 	
 	this.plano = new Patch(this.scene, 1, 1, this.uDivs, this.vDivs, this.cPoints);
