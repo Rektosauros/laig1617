@@ -4,7 +4,14 @@ function LinearAnimation (id, time, cPoints)
 	this.time = time;
 	this.cPoints = cPoints;
 	
-	//this.distance = ???
+	this.distance = 0;
+	
+	for (var i = 1; i < cPoints.length; i++)
+		{
+			
+			this.distance += Math.sqrt(Math.pow(cPoints[i][0] - cPoints[i-1][0], 2) + Math.pow(cPoints[i][1] - cPoints[i-1][1], 2) + Math.pow(cPoints[i][2] - cPoints[i-1][2], 2));
+			
+		}
 	
 	
 }
@@ -33,7 +40,8 @@ function LinearAnimation (id, time, cPoints)
 		for (counter = 1; counter < this.cPoints.length; counter++)
 			{
 				
-				 dist = //distance between points
+			//	 dist = 
+				 
 				
 			}
 		
