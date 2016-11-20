@@ -27,7 +27,7 @@ function LinearAnimation (id, time, cPoints)
 		{
 			
 			mat4.translate(matrix, matrix, this.cPoints[this.cPoints.length - 1]);
-			mat4.rotate(matrix,matrix,Math.atan2(this.cPoints[this.cPoints.length - 2][0] - this.cPoints[this.cPoints.length - 1][0],this.cPoints[this.cPoints.length - 2][2] - this.cPoints[this.cPoints.length - 2][2] ), 
+			mat4.rotate(matrix,matrix,Math.atan2(this.cPoints[this.cPoints.length - 2][0] - this.cPoints[this.cPoints.length - 1][0],this.cPoints[this.cPoints.length - 2][2] - this.cPoints[this.cPoints.length - 2][2] ); 
 			return matrix;
 			
 		}
@@ -40,10 +40,29 @@ function LinearAnimation (id, time, cPoints)
 		for (counter = 1; counter < this.cPoints.length; counter++)
 			{
 				
-			//	 dist = 
-				 
-				
+				dist = Math.sqrt(Math.pow(cPoints[counter][0] - cPoints[counter-1][0], 2) + Math.pow(cPoints[counter][1] - cPoints[counter-1][1], 2) + Math.pow(cPoints[counter][2] - cPoints[counter-1][2], 2));
+				if(currentDist + dist < this.distance)
+					{
+						currentDist += dist;
+					}
+				else 
+					break;
+						
 			}
+			
+		var diff = this.distance - currentDist;
+		var interpol = [];
 		
+		for (var i = 0; i < cPoints[counter].length; i++)
+		{
+			
+			interpol[i] = cPoints[counter - 1][i] * (1.0 - diff/dist) + (cPoints[counter][i] * (diff/dist);
+			
+		}
+		
+		mat4.translate(matrix,matrix, interpol);
+		mat4.rotate(matrix, matrix, Math.atan2(this.cPoints[counter][0] - this.cPoints[counter - 1][0],this.cPoints[counter][2] - this.cPoints[this.cPoints[counter - 1][2]), [0, 1, 0]);
+		
+		return matrix;
 		
 	}

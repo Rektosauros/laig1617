@@ -9,6 +9,7 @@ function MySceneGraph(filename, scene) {
 	this.scene2=[];
 	this.views=[];
 	this.default_view;
+	this.default_mat=[];
 	this.illumination=[];
 	this.lights=[];
 	this.textures=[];
@@ -390,11 +391,11 @@ MySceneGraph.prototype.parseTextures = function(rootElement){
 
 MySceneGraph.prototype.parseMaterials = function(rootElement){
 	var elems = rootElement.getElementsByTagName('materials');
-	console.log("HELLO");
 	if(elems==null)
 		return "materials element is missing";
 	console.log(elems);
 	var nr_materials=elems[0].children.length;
+	this.default_mat=this.reader.getString(elems[0],'default',true);
 
 	var ids=[];
 	for(var i=0;i<nr_materials;i++){
@@ -626,7 +627,8 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 		ids.push(comp_id);
 		var node = new Node();
 		node.setId(comp_id);
-		var m = mat4.create();
+		m = mat4.create();
+		//this.graph.m = mat4.create();
 
 		var transf=comp.children[0];
 		console.log(comp);
@@ -668,7 +670,7 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 								break;
 						}
 							var angle=this.reader.getFloat(rot,'angle',true);
-							mat4.rotate(m,m, (Math.PI *angle) / 180, axis);
+							mat4.rotate(.m,m, (Math.PI *angle) / 180, axis);
 							node.setMatrix(m);
 							console.log("Rotation of component "+comp_id+" with the values: axis:"+ax+", angle:"+angle);
 							break;

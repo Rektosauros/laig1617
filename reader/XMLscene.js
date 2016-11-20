@@ -144,7 +144,7 @@ XMLscene.prototype.onGraphLoaded = function ()
    // console.log(teste[teste.length-1]);
 
     
-    console.log(this.txts[this.graph.components["floor"].texture]);
+    //console.log(this.txts[this.graph.components["floor"].texture]);
 	
 	
 };
@@ -200,7 +200,8 @@ XMLscene.prototype.SceneDisplay = function(id){
    
     var texture = new CGFappearance(this);
     var mat;
-    if(this.graph.components[id].default_mat=="inherit"){
+	console.log('leave this here \n');
+   /* if(this.graph.components[id].default_mat=="inherit"){
         this.stackmaterial.push(this.stackmaterial.top());
         // console.log(mat);
     }else{
@@ -209,7 +210,7 @@ XMLscene.prototype.SceneDisplay = function(id){
         // console.log(mat);
         this.stackmaterial.pop()
         // mat.apply();
-    }
+    }*/
 
     if(mat!=null){
         var temp_mat=this.graph.materials[mat];
@@ -224,17 +225,17 @@ XMLscene.prototype.SceneDisplay = function(id){
 
     
     // var tex = this.txts[this.graph.components[id].texture];
-    if(this.graph.components[id].texture=="inherit"){
+    /*if(this.graph.components[id].textures=="inherit"){
         this.stacktexture.push(this.stacktexture.top());
         
-    }else if(this.graph.components[id].texture!="none"){
-        this.stacktexture.push(this.txts[this.graph.components[id].texture]);
+    }else if(this.graph.components[id].textures != "none"){
+        this.stacktexture.push(this.txts[this.graph.components[id].textures]);
         console.log(this.stacktexture.top());
-        texture.setTexture(this.stacktexture.top());
+        textures.setTexture(this.stacktexture.top());
          //texture.apply();
     }
     this.stacktexture.pop();
-    
+    */
 
 
 
@@ -254,7 +255,7 @@ XMLscene.prototype.SceneDisplay = function(id){
             this.prims[prim_id].display();
             this.popMatrix();
         }
-    }
+	}
 
 
         
