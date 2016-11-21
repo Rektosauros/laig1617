@@ -6,6 +6,7 @@ function Node(){
 	this.m=null;
 	this.prim_descendents=[];
 	this.comp_descendents=[];
+	this.animations=[];
 }
 
 Node.prototype.pushPrimitives=function(nodeName){
@@ -36,3 +37,4 @@ Node.prototype.setMatrix=function(m){
 	this.m=mat4.clone(m);
 	console.log(this.m);
 };
+

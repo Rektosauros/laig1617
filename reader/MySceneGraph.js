@@ -1,4 +1,3 @@
-
 function MySceneGraph(filename, scene) {
 	this.loadedOk = null;
 	
@@ -9,7 +8,6 @@ function MySceneGraph(filename, scene) {
 	this.scene2=[];
 	this.views=[];
 	this.default_view;
-	this.default_mat=[];
 	this.illumination=[];
 	this.lights=[];
 	this.textures=[];
@@ -18,6 +16,7 @@ function MySceneGraph(filename, scene) {
 	this.transformations=[];
 	this.primitive=[];
 	this.components=[];
+	this.animations=[];
 	//this.updates=[];
 
 		
@@ -517,10 +516,59 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 MySceneGraph.prototype.parseAnimations = function(rootElement){
 	
 var elems = rootElement.getElementsByTagName('Animations');
+if(elems.length == 0)
+	{
+		
+		this.onXMLError("No animation element! \n");
+		
+	}
 
-
-
+		for (var i = 0; i < elems.length; i++)
+			{
+				
+				var type = this.reader.getString(elem, 'type');
+				var id = this.reader.getString(elem, 'id');
+				var time = this.reader.getFloat(elem,'span');
+			if(isNAN(time))
+					this.onXMLError('Animation has to be float number! \n');
+			
+			if(type == 'linear')
+					{
+						var controls = elem.getElementsByTagName('controlpoint');
+						var cPoints = new Array();
+					for (let point of controls) 
+					{
+                    var coord = vec3.fromValues(this.reader.getFloat(point, 'xx'), this.reader.getFloat(point, 'yy'), this.reader.getFloat(point, 'zz'));
+                    if (isNaN(this.reader.getFloat(point, 'xx')) || isNaN(this.reader.getFloat(point, 'yy')) || isNaN(this.reader.getFloat(point, 'zz')))
+                        this.onXMLError('Animation must have float number! \n');
+                    cPoints.push(coord);
+						
+					}
+					
+					this.animations[id] = LinearAnimation(this.scene, id, time, cPoints);
+					break;
+					}
+			if(type == 'circular')
+				{
+				var radius = this.reader.getFloat(elem, 'radius');
+                if (isNaN(radius))
+                    this.onXMLError('Radius must be float number! \n');
+                var sAng = this.reader.getFloat(elem, 'startang');
+                if (isNaN(sAng))
+                    this.onXMLError('Sang must be float number! \n.');
+                var rAng = this.reader.getFloat(elem, 'rotang');
+                if (isNaN(rAng))
+                    this.onXMLError('Rotation angle must be float number!');
+                var center = this.reader.getString(elem, 'center');
+                var centerCoords = center.split(" ");
+                var coords = vec3.fromValues(centerCoords[0], centerCoords[1], centerCoords[2]);
+                this.animations[id] = new CircularAnimation(this.scene, id, time, coords, radius, sAng, rAng);
+                break;	
+				}
+				
+			}
 }
+
 
 MySceneGraph.prototype.parsePrimitives=function(rootElement){
 	var elems = rootElement.getElementsByTagName('primitives');
@@ -602,6 +650,26 @@ MySceneGraph.prototype.parsePrimitives=function(rootElement){
 					value["args"]=args;
 					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {inner=" + args[0]+ ", outer=" + args[1] + ", slices=" +args[2]+ ", loops=" +args[3]  + "}");
 					break;
+				case 'Plane':
+					var plano=prim.children[0];
+					value["type"]=plano.tagName;
+					var args=[];
+					args.push(this.reader.getFloat(plano,'dimX',true));
+					args.push(this.reader.getFloat(plano,'dimY',true));
+					args.push(this.reader.getFloat(plano,'partsX',true));
+					args.push(this.reader.getFloat(plano,'partsY',true));
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {dimX=" + args[0]+ ", dimY=" + args[1] + ", partsX=" +args[2]+ ", partsY=" +args[3]  + "}");
+					break;
+				case 'Patch':
+					var patch=prim.children[0];
+					value["type"]=patch.tagName;
+					var args=[];
+					args.push(this.reader.getFloat(patch,'orderU',true));
+					args.push(this.reader.getFloat(patch,'orderV',true));
+					args.push(this.reader.getFloat(patch,'partsU',true));
+					args.push(this.reader.getFloat(patch,'partsV',true));
+					console.log("Primitive with id "+ id +" read from file: "+ value["type"]+ " {orderU=" + args[0]+ ", orderV=" + args[1] + ", partsU=" +args[2]+ ", partsV=" +args[3]  + "}");
+					break;
 				default:
 					return "primitive with id "+id+" not recognized";
 			}
@@ -670,7 +738,7 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 								break;
 						}
 							var angle=this.reader.getFloat(rot,'angle',true);
-							mat4.rotate(.m,m, (Math.PI *angle) / 180, axis);
+							mat4.rotate(m,m, (Math.PI *angle) / 180, axis);
 							node.setMatrix(m);
 							console.log("Rotation of component "+comp_id+" with the values: axis:"+ax+", angle:"+angle);
 							break;

@@ -201,7 +201,7 @@ XMLscene.prototype.SceneDisplay = function(id){
     var texture = new CGFappearance(this);
     var mat;
 	console.log('leave this here \n');
-   /* if(this.graph.components[id].default_mat=="inherit"){
+/*    if(this.graph.components[id].default_mat=="inherit"){
         this.stackmaterial.push(this.stackmaterial.top());
         // console.log(mat);
     }else{
@@ -210,7 +210,7 @@ XMLscene.prototype.SceneDisplay = function(id){
         // console.log(mat);
         this.stackmaterial.pop()
         // mat.apply();
-    }*/
+    }
 
     if(mat!=null){
         var temp_mat=this.graph.materials[mat];
@@ -225,19 +225,19 @@ XMLscene.prototype.SceneDisplay = function(id){
 
     
     // var tex = this.txts[this.graph.components[id].texture];
-    /*if(this.graph.components[id].textures=="inherit"){
+    if(this.graph.components[id].texture=="inherit"){
         this.stacktexture.push(this.stacktexture.top());
         
-    }else if(this.graph.components[id].textures != "none"){
-        this.stacktexture.push(this.txts[this.graph.components[id].textures]);
+    }else if(this.graph.components[id].texture != "none"){
+        this.stacktexture.push(this.txts[this.graph.components[id].texture]);
         console.log(this.stacktexture.top());
         textures.setTexture(this.stacktexture.top());
          //texture.apply();
     }
     this.stacktexture.pop();
-    */
+    
 
-
+*/
 
     //mut de matrizes
     this.multMatrix(this.graph.components[id].m);
@@ -287,16 +287,25 @@ XMLscene.prototype.updateMaterial = function(){
   }
   console.log(this.materialIndex);
 }
-/*
+
 XMLscene.prototype.update = function(currTime){
 	
 	var lastTime = this.lastTime || currTime;
 	this.lastTime = currTime;
 	
-	var deltaTime = currTime-lastTime;
+	var deltaTime = (currTime-lastTime) / 1000;
+	
+	for(id in this.graph.animations)
+	{
+		this.graph.animations.[id].update(deltaTime);
+	}
+	
+	for(id in this.graph.components)
+	{
+		this.graph.components[id].update(deltaTime);
+	}
 
 	console.log('Im updating... \n');
 	
 	this.graph.update(deltaTime);
 }
-*/
